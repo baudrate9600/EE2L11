@@ -42,13 +42,8 @@ begin
 				new_counter <= counter + 1; 
 				if(counter = 3 or counter = 4 or counter = 5) then
 					spi_wire <= '1';
-				else 
-					spi_wire <= '0';
-				end if; 
-				if (counter = 7) then 
+				elsif (counter = 7) then 
 					new_state <= START;
-				else 
-					new_state <= INIT; 
 				end if; 
 			when START => 
 				if(RW = '1') then 
