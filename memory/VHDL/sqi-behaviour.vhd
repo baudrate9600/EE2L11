@@ -2,27 +2,31 @@ library IEEE;
 use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 architecture behaviour of sqi is
-	type sqi_state is (START, INSTRUCTION,ADDR0,ADDR1,ADDR2,ADDR3, WRITING, READING, DONE);
+	type sqi_state is (START, s0,s1 ,DONE);
 	signal state, new_state : sqi_state;
-	signal DFF : std_logic_vector(7 downto 0); 
-  signal counter : unsigned(3 downto 0); 
-	signal counter_en : std_logic;
-	signal rom_address : std_logic_vector(1 downto 0); 
-	signal rom_data : std_logic_vector(7 downto 0); 
-	signal data_wire : std_logic_vector( 7 downto 0);
+	signal DFF 												: std_logic_vector(7 downto 0); 
+  signal counter 									: unsigned(3 downto 0); 
+	signal new_counter 					: unsigned(3 downto 0); 
+	signal rom_address 					: std_logic_vector(1 downto 0); 
+	signal rom_data 								: std_logic_vector(7 downto 0); 
+	signal data_wire 							: std_logic_vector( 7 downto 0);
 
 	signal load_reg : std_logic; 
   signal shift_reg: std_logic;
+	
+	signal mux_select 						:	std_logic_vector(2 downto 0); 	
 
 begin
-	--New state
+	--New state generation
 	process (clk) 
 	begin
 		if rising_edge(clk) then 
 			if reset = '1' then 
 				state <= START;
+				counter <= "0000";
 			else 
-				state <= new_state; 
+				state <= new_state;
+				counter <= new_counter;
 			end if; 
 		end if; 
 	end process;
@@ -30,9 +34,10 @@ begin
 	--FSM 
 	process(state, en ,cs ,counter) 
 	begin 
+			new_counter <= counter; 
 		case state is 
+			
 			when START => 
-				counter_en <= '0';
 				if(RW = '1') then 
 							rom_address <= "00";
 					 else 
@@ -40,27 +45,19 @@ begin
 				end if;
 				load_reg <= '1'; 
 				if(en = '1') then 
-					 new_state <= INSTRUCTION; 	
+					 new_state <= s0;
 				else 
 					new_state <= start; 
 				end if; 
-			when INSTRUCTION =>
+			when s0 =>
 				load_reg<='0';
 				shift_reg <= '1';   
-				new_state <= ADDR0;
-			when ADDR0 =>
+				new_state <= s1;
+				new_counter <= counter + 1;
+			when s1 =>
 				load_reg<='1'; 
 				shift_reg <= '0';
-				new_state <= ADDR1; 
-			when ADDR1 =>
-				load_reg<='0'; 
-				shift_reg <= '1';
-			when WRITING => 
-				load_reg<='1'; 
-				shift_reg <= '0';
-				new_state <= start;
-			when READING => 
-				new_state <= START;
+				new_state <= s0; 
 			when DONE => 
 				new_state <= START; 
 			when others =>
@@ -71,8 +68,8 @@ begin
 	process(rom_address) 
 	begin 
 		case rom_address is 
-			when "00" =>	rom_data <= "00000011"; --READ 
-			when "01" => rom_data <= "00000010"; --WRITE
+			when "00" =>	rom_data <= "00110000"; --READ 
+			when "01" => rom_data <= "00100000"; --WRITE
 			when "10" => rom_data <= "00111000"; --Enter SQI MODE
 			when "11" => rom_data <= "11111111"; --Reset SQI MODE 
 			when others => rom_data <= "00000000";
@@ -80,12 +77,13 @@ begin
 	end process;
 
 	--Data multiplexer 	
-	with state SELECT 
-	data_wire <= data_in when WRITING,
-							 rom_data when INSTRUCTION,
-							 rom_data when START, 
-								
-							"00000000" when others;
+	with counter SELECT 
+	data_wire <= 	rom_data 	when "0000",
+								"00000000" when "0001", 	
+							 	'0' & address(14 downto 8) when "0010",
+								address(7  downto 0) when "0011",
+								data_in 		when "0100",
+					    		"00000000" when others;
 
 
 	--Shift register 
@@ -120,24 +118,9 @@ begin
 	end process; 
 
 
-	--counter 
-	process(clk,reset,counter) 
-	begin
-		if rising_edge(clk) then 
-			if reset = '1' then 
-				counter <= "0000"; 
-			else 
-				if counter_en = '1' then 
-					counter <= counter + 1;
-				else
-					counter <= "0000";
-				end if; 
-			end if; 
-		end if;
-	end process; 
 	
 
- 
+  --MOSI port
 	MOSI(0) <= DFF(0);
 	MOSI(1) <= DFF(2); 
 	MOSI(2)	<= DFF(4);
