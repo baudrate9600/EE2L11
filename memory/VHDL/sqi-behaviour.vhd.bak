@@ -57,10 +57,8 @@ ARCHITECTURE behaviour OF sqi IS
 			reset    : IN std_logic;
 			en       : IN std_logic;
 			RW       : IN std_logic;
-			high_z 		: OUT std_logic; 
 			single			: IN std_logic; 
 			data_in  : IN std_logic_vector(7 DOWNTO 0);
-			shift_data_in    : in std_logic_vector(7 downto 0);
 			data_read: OUT std_logic_vector(7 downto 0);
 			data_out : OUT std_logic_vector(7 DOWNTO 0);
 			address  : IN std_logic_vector(14 DOWNTO 0);
@@ -90,7 +88,7 @@ BEGIN
 	PORT MAP(clk, shift_reset, load_reg, shift_reg, data_wire, data_read_in, MISO, shift_out);
 	u2 : sqi_controller
 	PORT MAP
-	(clk,reset,en,RW,high_z,single,data_in,data_read_in, data_out,data_wire,address,count_reset,count_en,count_load,count_out,count_in, 
+	(clk,reset,en,RW,single,data_read_in, data_out,data_wire,address,count_reset,count_en,count_load,count_out,count_in, 
 		shift_reg,load_reg,done,shift_out,shift_reset,SCK,CS,MOSI );
 
  
