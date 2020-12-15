@@ -1,6 +1,7 @@
 *
 !*/
 !memory/VHDL/*
+memory/VHDL/*.swp
 !Diagrams/*
 !README.md
 !.gitignore
