@@ -11,14 +11,15 @@ architecture behaviour of memory_tb is
            rw           : in  std_logic;
            ce           : in  std_logic;
            mode  	     : in  std_logic;
-           calc_buf_in  : in  std_logic_vector(23 downto 0);
+           calc_buf_in  : in  std_logic_vector(5 downto 0);
            calc_buf_out : out std_logic_vector(23 downto 0);
       	data_out     : out std_logic_vector(3 downto 0);
            ready        : out std_logic;
    	cs	     : out std_logic;
    	en	     : out std_logic;
       	sqi_finished : in std_logic;
-      	sqi_data_in  : in std_logic_vector(7 downto 0));
+      	sqi_data_in  : in std_logic_vector(7 downto 0);
+	sqi_data_out : out std_logic_vector(7 downto 0));
    end component;
    signal clk          : std_logic;
    signal reset	     : std_logic;
@@ -28,7 +29,7 @@ architecture behaviour of memory_tb is
    signal rw           : std_logic;
    signal ce           : std_logic;
    signal mode  	     : std_logic;
-   signal calc_buf_in  : std_logic_vector(23 downto 0);
+   signal calc_buf_in  : std_logic_vector(5 downto 0);
    signal calc_buf_out : std_logic_vector(23 downto 0);
    signal data_out     : std_logic_vector(3 downto 0);
    signal ready        : std_logic;
@@ -36,8 +37,10 @@ architecture behaviour of memory_tb is
    signal en	     : std_logic;
    signal sqi_finished : std_logic;
    signal sqi_data_in  : std_logic_vector(7 downto 0);
+   signal sqi_data_out : std_logic_vector(7 downto 0);
 begin
-   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, calc_buf_in, calc_buf_out, data_out, ready, cs, en, sqi_finished, sqi_data_in);
+   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, calc_buf_in, calc_buf_out, data_out, ready, cs, en, sqi_finished, sqi_data_in,
+	sqi_data_out);
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
    reset <= '1' after 0 ns,
@@ -48,13 +51,17 @@ begin
    y <= (7 => '1', others => '0') after 0 ns,
 	(others => '0') after 400 ns;
 
-   rw <= '1' after 0 ns;
+   rw <= '1' after 0 ns,
+	 '0' after 900 ns;
    ce <= '1' after 0 ns,
 	 '0' after 120 ns,
-	 '1' after 400 ns;
+	 '1' after 400 ns,
+	 '0' after 760 ns,
+	 '1' after 900 ns;
    mode <= '0' after 0 ns;
 
    calc_buf_in <= (others => '0') after 0 ns;
+   calc_buf_out <= (others => '0') after 0 ns;
 
    sqi_finished <= '0' after 0 ns,
 		   '1' after 160 ns,
@@ -66,7 +73,8 @@ begin
 		   '1' after 560 ns,
 		   '0' after 600 ns,
 		   '1' after 660 ns,
-		   '0' after 700 ns;
+		   '0' after 700 ns,
+		   '1' after 960 ns;
 
    sqi_data_in <= (0 => '1', others => '0') after 0 ns,
 		  (7 => '1', others => '0') after 400 ns;
