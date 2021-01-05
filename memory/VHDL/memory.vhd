@@ -12,7 +12,7 @@ entity memory is
         mode  	     : in  std_logic;
         calc_buf_in  : in  std_logic_vector(5 downto 0);
         calc_buf_out : out std_logic_vector(23 downto 0);
-   	data_out     : out std_logic_vector(3 downto 0);
+	framebuffer_buf : out std_logic_vector(157 downto 0);
         ready        : out std_logic;
 	cs	     : out std_logic;
 	en	     : out std_logic;

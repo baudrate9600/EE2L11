@@ -13,7 +13,7 @@ signal state, new_State : memory_state;
 signal out_low, out_middle, out_high : std_logic_vector(7 downto 0);
 signal new_calc_buf_out : std_logic_vector(23 downto 0);
 signal row_buf, new_row_buf : std_logic_vector(5 downto 0);
-signal framebuffer_buf, new_framebuffer_buf : std_logic_vector(157 downto 0);
+signal new_framebuffer_buf : std_logic_vector(157 downto 0);
 begin
 	-- New state  generation
 	process (clk)
@@ -101,7 +101,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
 				if (counter < 20) then
-					sqi_address <= std_logic_vector(resize(((counter) + (column * 159)), sqi_address'length));
+					sqi_address <= std_logic_vector(resize(((counter) + (column * 158)), sqi_address'length));
 					new_counter <= counter;
 					new_state <= READING_FRAMEBUFFER;
 				else
@@ -115,61 +115,80 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 						new_framebuffer_buf(7 downto 0) <= sqi_data_in;
 						new_framebuffer_buf(157 downto 8) <= framebuffer_buf(157 downto 8);
 					elsif (counter = 1) then
-						new_framebuffer_buf <= (15 downto 8 => sqi_data_in, 7 downto 0 => framebuffer_buf(7 downto 0),
-							157 downto 16 => framebuffer_buf(157 downto 16));
+						new_framebuffer_buf(7 downto 0) <= framebuffer_buf(7 downto 0);
+						new_framebuffer_buf(15 downto 8) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 16) <= framebuffer_buf(157 downto 16);
 					elsif (counter = 2) then
-						new_framebuffer_buf <= (23 downto 16 => sqi_data_in, 15 downto 0 => framebuffer_buf(15 downto 0),
-							157 downto 24 => framebuffer_buf(157 downto 24));
+						new_framebuffer_buf(15 downto 0) <= framebuffer_buf(15 downto 0);
+						new_framebuffer_buf(23 downto 16) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 24) <= framebuffer_buf(157 downto 24);
 					elsif (counter = 3) then
-						new_framebuffer_buf <= (31 downto 24 => sqi_data_in, 23 downto 0 => framebuffer_buf(23 downto 0),
-							157 downto 32 => framebuffer_buf(157 downto 32));
+						new_framebuffer_buf(23 downto 0) <= framebuffer_buf(23 downto 0);
+						new_framebuffer_buf(31 downto 24) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 32) <= framebuffer_buf(157 downto 32);
 					elsif (counter = 4) then
-						new_framebuffer_buf <= (39 downto 32 => sqi_data_in, 31 downto 0 => framebuffer_buf(31 downto 0),
-							157 downto 40 => framebuffer_buf(157 downto 40));
+						new_framebuffer_buf(31 downto 0) <= framebuffer_buf(31 downto 0);
+						new_framebuffer_buf(39 downto 32) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 40) <= framebuffer_buf(157 downto 40);
 					elsif (counter = 5) then
-						new_framebuffer_buf <= (47 downto 40 => sqi_data_in, 39 downto 0 => framebuffer_buf(39 downto 0),
-							157 downto 48 => framebuffer_buf(157 downto 48));
+						new_framebuffer_buf(39 downto 0) <= framebuffer_buf(39 downto 0);
+						new_framebuffer_buf(47 downto 40) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 48) <= framebuffer_buf(157 downto 48);
 					elsif (counter = 6) then
-						new_framebuffer_buf <= (55 downto 48 => sqi_data_in, 47 downto 0 => framebuffer_buf(47 downto 0),
-							157 downto 56 => framebuffer_buf(157 downto 56));
+						new_framebuffer_buf(47 downto 0) <= framebuffer_buf(47 downto 0);
+						new_framebuffer_buf(55 downto 48) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 56) <= framebuffer_buf(157 downto 56);
 					elsif (counter = 7) then
-						new_framebuffer_buf <= (63 downto 56 => sqi_data_in, 55 downto 0 => framebuffer_buf(55 downto 0),
-							157 downto 64 => framebuffer_buf(157 downto 64));
+						new_framebuffer_buf(55 downto 0) <= framebuffer_buf(55 downto 0);
+						new_framebuffer_buf(63 downto 56) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 64) <= framebuffer_buf(157 downto 64);
 					elsif (counter = 8) then
-						new_framebuffer_buf <= (71 downto 64 => sqi_data_in, 63 downto 0 => framebuffer_buf(63 downto 0),
-							157 downto 72 => framebuffer_buf(157 downto 72));
+						new_framebuffer_buf(63 downto 0) <= framebuffer_buf(63 downto 0);
+						new_framebuffer_buf(71 downto 64) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 72) <= framebuffer_buf(157 downto 72);
 					elsif (counter = 9) then
-						new_framebuffer_buf <= (79 downto 72 => sqi_data_in, 71 downto 0 => framebuffer_buf(71 downto 0),
-							157 downto 80 => framebuffer_buf(157 downto 80));
+						new_framebuffer_buf(71 downto 0) <= framebuffer_buf(71 downto 0);
+						new_framebuffer_buf(79 downto 72) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 80) <= framebuffer_buf(157 downto 80);
 					elsif (counter = 10) then
-						new_framebuffer_buf <= (87 downto 80 => sqi_data_in, 79 downto 0 => framebuffer_buf(79 downto 0),
-							157 downto 88 => framebuffer_buf(157 downto 88));
+						new_framebuffer_buf(79 downto 0) <= framebuffer_buf(79 downto 0);
+						new_framebuffer_buf(87 downto 80) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 88) <= framebuffer_buf(157 downto 88);
 					elsif (counter = 11) then
-						new_framebuffer_buf <= (95 downto 88 => sqi_data_in, 87 downto 0 => framebuffer_buf(87 downto 0),
-							157 downto 96 => framebuffer_buf(157 downto 96));
+						new_framebuffer_buf(87 downto 0) <= framebuffer_buf(87 downto 0);
+						new_framebuffer_buf(95 downto 88) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 96) <= framebuffer_buf(157 downto 96);
 					elsif (counter = 12) then
-						new_framebuffer_buf <= (103 downto 96 => sqi_data_in, 95 downto 0 => framebuffer_buf(95 downto 0),
-							157 downto 104 => framebuffer_buf(157 downto 104));
+						new_framebuffer_buf(95 downto 0) <= framebuffer_buf(95 downto 0);
+						new_framebuffer_buf(103 downto 96) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 104) <= framebuffer_buf(157 downto 104);
 					elsif (counter = 13) then
-						new_framebuffer_buf <= (111 downto 104 => sqi_data_in, 103 downto 0 => framebuffer_buf(103 downto 0),
-							157 downto 112 => framebuffer_buf(157 downto 112));
+						new_framebuffer_buf(103 downto 0) <= framebuffer_buf(103 downto 0);
+						new_framebuffer_buf(111 downto 104) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 112) <= framebuffer_buf(157 downto 112);
 					elsif (counter = 14) then
-						new_framebuffer_buf <= (119 downto 112 => sqi_data_in, 111 downto 0 => framebuffer_buf(111 downto 0),
-							157 downto 120 => framebuffer_buf(157 downto 120));
+						new_framebuffer_buf(111 downto 0) <= framebuffer_buf(111 downto 0);
+						new_framebuffer_buf(119 downto 112) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 120) <= framebuffer_buf(157 downto 120);
 					elsif (counter = 15) then
-						new_framebuffer_buf <= (127 downto 120 => sqi_data_in, 119 downto 0 => framebuffer_buf(119 downto 0),
-							157 downto 128 => framebuffer_buf(157 downto 128));
+						new_framebuffer_buf(119 downto 0) <= framebuffer_buf(119 downto 0);
+						new_framebuffer_buf(127 downto 120) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 128) <= framebuffer_buf(157 downto 128);
 					elsif (counter = 16) then
-						new_framebuffer_buf <= (135 downto 128 => sqi_data_in, 127 downto 0 => framebuffer_buf(127 downto 0),
-							157 downto 136 => framebuffer_buf(157 downto 136));
+						new_framebuffer_buf(127 downto 0) <= framebuffer_buf(127 downto 0);
+						new_framebuffer_buf(135 downto 128) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 136) <= framebuffer_buf(157 downto 136);
 					elsif (counter = 17) then
-						new_framebuffer_buf <= (143 downto 136 => sqi_data_in, 135 downto 0 => framebuffer_buf(135 downto 0),
-							157 downto 144 => framebuffer_buf(157 downto 144));
+						new_framebuffer_buf(135 downto 0) <= framebuffer_buf(135 downto 0);
+						new_framebuffer_buf(143 downto 136) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 144) <= framebuffer_buf(157 downto 144);
 					elsif (counter = 18) then
-						new_framebuffer_buf <= (151 downto 144 => sqi_data_in, 143 downto 0 => framebuffer_buf(143 downto 0),
-							157 downto 152 => framebuffer_buf(157 downto 152));
+						new_framebuffer_buf(143 downto 0) <= framebuffer_buf(143 downto 0);
+						new_framebuffer_buf(151 downto 144) <= sqi_data_in;
+						new_framebuffer_buf(157 downto 152) <= framebuffer_buf(157 downto 152);
 					elsif (counter = 19) then
-						new_framebuffer_buf <= (157 downto 152 => sqi_data_in(5 downto 0), 151 downto 0 => framebuffer_buf(151 downto 0));
+						new_framebuffer_buf(151 downto 0) <= framebuffer_buf(151 downto 0);
+						new_framebuffer_buf(157 downto 152) <= sqi_data_in(5 downto 0);
 					end if;
 					new_counter <= counter + 1;
 					new_state <= READ_FRAMEBUFFER;
@@ -214,7 +233,9 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				new_calc_buf_out <= calc_buf_out;
 				if (column = 0) then
 					sqi_address <= std_logic_vector(resize(((row) + (column * 158)), sqi_address'length));
-					sqi_data_out <= (6 downto 1 => calc_buf_in, others => '0');
+					sqi_data_out(6 downto 1) <= calc_buf_in;
+					sqi_data_out(0) <= '0';
+					sqi_data_out(7) <= '0';
 					new_state <= WRITING_0;
 				else
 					sqi_address <= std_logic_vector(resize(((row - 1) + (column * 158)), sqi_address'length));
@@ -238,7 +259,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
 				sqi_address <= std_logic_vector(resize(((row - 1) + (column * 158)), sqi_address'length));
-				sqi_data_out <= (7 downto 6 => calc_buf_in(1 downto 0), 5 downto 0 => row_buf(5 downto 0));
+				sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
+				sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
 				new_state <= WRITING_1;
 			when WRITING_1 =>
 				ready <= '0';
@@ -256,7 +278,9 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
 				sqi_address <= std_logic_vector(resize(((row) + (column * 159)), sqi_address'length));
-				sqi_data_out <= (6 downto 1 => calc_buf_in, others => '0');
+				sqi_data_out(6 downto 1) <= calc_buf_in;
+				sqi_data_out(0) <= '0';
+				sqi_data_out(7) <= '0';
 				new_state <= WRITING_2;
 			when WRITING_2 =>
 				ready <= '0';

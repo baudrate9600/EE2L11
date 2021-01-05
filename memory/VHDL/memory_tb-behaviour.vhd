@@ -13,7 +13,7 @@ architecture behaviour of memory_tb is
            mode  	     : in  std_logic;
            calc_buf_in  : in  std_logic_vector(5 downto 0);
            calc_buf_out : out std_logic_vector(23 downto 0);
-      	data_out     : out std_logic_vector(3 downto 0);
+      	framebuffer_buf     : out std_logic_vector(157 downto 0);
            ready        : out std_logic;
    	cs	     : out std_logic;
    	en	     : out std_logic;
@@ -31,7 +31,7 @@ architecture behaviour of memory_tb is
    signal mode  	     : std_logic;
    signal calc_buf_in  : std_logic_vector(5 downto 0);
    signal calc_buf_out : std_logic_vector(23 downto 0);
-   signal data_out     : std_logic_vector(3 downto 0);
+   signal framebuffer_buf     :  std_logic_vector(157 downto 0);
    signal ready        : std_logic;
    signal cs	     : std_logic;
    signal en	     : std_logic;
@@ -39,7 +39,7 @@ architecture behaviour of memory_tb is
    signal sqi_data_in  : std_logic_vector(7 downto 0);
    signal sqi_data_out : std_logic_vector(7 downto 0);
 begin
-   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, calc_buf_in, calc_buf_out, data_out, ready, cs, en, sqi_finished, sqi_data_in,
+   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, calc_buf_in, calc_buf_out, framebuffer_buf, ready, cs, en, sqi_finished, sqi_data_in,
 	sqi_data_out);
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
