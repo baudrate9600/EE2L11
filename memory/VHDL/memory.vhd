@@ -5,7 +5,7 @@ entity memory is
    port(clk          : in  std_logic;
    	reset	     : in  std_logic;
         data_in      : in  std_logic_vector(7 downto 0);
-        x            : in  std_logic_vector(3 downto 0);
+        x            : in  std_logic_vector(4 downto 0);
         y            : in  std_logic_vector(7 downto 0);
         rw           : in  std_logic;
         ce           : in  std_logic;

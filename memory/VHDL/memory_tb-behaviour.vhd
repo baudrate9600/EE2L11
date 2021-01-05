@@ -6,7 +6,7 @@ architecture behaviour of memory_tb is
       port(clk          : in  std_logic;
       	reset	     : in  std_logic;
            data_in      : in  std_logic_vector(7 downto 0);
-           x            : in  std_logic_vector(3 downto 0);
+           x            : in  std_logic_vector(4 downto 0);
            y            : in  std_logic_vector(7 downto 0);
            rw           : in  std_logic;
            ce           : in  std_logic;
@@ -24,7 +24,7 @@ architecture behaviour of memory_tb is
    signal clk          : std_logic;
    signal reset	     : std_logic;
    signal data_in      : std_logic_vector(7 downto 0);
-   signal x            : std_logic_vector(3 downto 0);
+   signal x            : std_logic_vector(4 downto 0);
    signal y            : std_logic_vector(7 downto 0);
    signal rw           : std_logic;
    signal ce           : std_logic;
