@@ -53,7 +53,11 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				if (ce = '1') then
 					new_counter <= to_unsigned(0, counter'length);
 					if (rw = '1') then
-						new_state <= READ_ROW;
+						if (mode = '0') then
+							new_state <= READ_ROW;
+						else
+							new_state <= READ_FRAMEBUFFER;
+						end if;
 					else
 						new_state <= WRITE_ROW_1;
 					end if;

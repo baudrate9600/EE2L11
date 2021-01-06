@@ -47,18 +47,28 @@ begin
             '0' after 30 ns;
    data_in <= (others => '0') after 0 ns;
 
-   x <= (others => '0') after 0 ns;
+   x <= (others => '0') after 0 ns,
+	"00010" after 2800 ns;
    y <= (7 => '1', others => '0') after 0 ns,
 	(others => '0') after 400 ns;
 
    rw <= '1' after 0 ns,
-	 '0' after 900 ns;
+	 '0' after 900 ns,
+	 '1' after 1000 ns,
+	 '0' after 2800 ns;
    ce <= '1' after 0 ns,
 	 '0' after 120 ns,
 	 '1' after 400 ns,
 	 '0' after 760 ns,
-	 '1' after 900 ns;
-   mode <= '0' after 0 ns;
+	 '1' after 900 ns,
+	 '0' after 960 ns,
+	 '1' after 1000 ns,
+	 '0' after 2700 ns,
+	 '1' after 2800 ns,
+	 '0' after 2900 ns;
+   mode <= '0' after 0 ns,
+	   '1' after 1000 ns,
+	   '0' after 2800 ns;
 
    calc_buf_in <= (others => '0') after 0 ns;
    calc_buf_out <= (others => '0') after 0 ns;
@@ -77,6 +87,7 @@ begin
 		   '1' after 960 ns;
 
    sqi_data_in <= (0 => '1', others => '0') after 0 ns,
-		  (7 => '1', others => '0') after 400 ns;
+		  (7 => '1', others => '0') after 400 ns,
+		  (others => '1') after 1000 ns;
 end behaviour;
 
