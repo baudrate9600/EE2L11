@@ -71,7 +71,6 @@ begin
 	   '0' after 2800 ns;
 
    calc_buf_in <= (others => '0') after 0 ns;
-   calc_buf_out <= (others => '0') after 0 ns;
 
    sqi_finished <= '0' after 0 ns,
 		   '1' after 160 ns,

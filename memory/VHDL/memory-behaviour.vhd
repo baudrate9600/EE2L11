@@ -9,7 +9,7 @@ signal counter, new_counter : unsigned(7 downto 0);
 
 type memory_state is (READING, WRITING_0, WRITING_1, WRITING_2, READ_FRAMEBUFFER, READING_FRAMEBUFFER, READ_ROW, WRITE_ROW_1,
 	WRITE_ROW_2, WRITE_ROW_3, FETCH_PREVIOUS_ROW, IDLE, RESET_STATE);
-signal state, new_State : memory_state;
+signal state, new_state : memory_state;
 signal out_low, out_middle, out_high : std_logic_vector(7 downto 0);
 signal new_calc_buf_out : std_logic_vector(23 downto 0);
 signal row_buf, new_row_buf : std_logic_vector(5 downto 0);
@@ -21,6 +21,9 @@ begin
 		if rising_edge(clk) then
 			if reset = '1' then
 				counter <= to_unsigned(0, counter'length);
+				calc_buf_out <= (others => '0');
+				row_buf <= (others => '0');
+				framebuffer_buf <= (others => '0');
 				state <= RESET_STATE;
 			else
 				framebuffer_buf <= new_framebuffer_buf;
@@ -33,13 +36,15 @@ begin
 	end process;
 
 	-- FSM
-FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
+FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, calc_buf_out, framebuffer_buf, row_buf, mode)
 	variable row : unsigned(7 downto 0);
 	variable column : unsigned(4 downto 0);
 	begin
 		case state is
 			when RESET_STATE =>
 				new_calc_buf_out <= (others => '0');
+				new_framebuffer_buf <= (others => '0');
+				new_row_buf <= (others => '0');
 				ready <= '1';
 				sqi_enabled <= '0';
 				if (reset = '1') then
@@ -50,6 +55,9 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 			when IDLE =>
 				ready <= '1';
 				sqi_enabled <= '0';
+				new_calc_buf_out <= calc_buf_out;
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (ce = '1') then
 					new_counter <= to_unsigned(0, counter'length);
 					if (rw = '1') then
@@ -67,6 +75,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 			when READING =>
 				ready <= '0';
 				sqi_enabled <= '1';
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (sqi_finished = '1') then
 					case counter is
 						when to_unsigned(0, counter'length) =>
@@ -94,6 +104,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				ready <= '0';
 				sqi_enabled <= '1';
 				new_calc_buf_out <= calc_buf_out;
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (sqi_finished = '1') then
 					new_state <= IDLE;
 				else
@@ -104,6 +116,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				ready <= '0';
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (counter < 20) then
 					sqi_address <= std_logic_vector(resize(((counter) + (column * 158)), sqi_address'length));
 					new_counter <= counter;
@@ -114,6 +128,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 			when READING_FRAMEBUFFER =>
 				ready <= '0';
 				sqi_enabled <= '1';
+				new_calc_buf_out <= calc_buf_out;
+				new_row_buf <= row_buf;
 				if (sqi_finished = '1') then
 					if (counter = 0) then
 						new_framebuffer_buf(7 downto 0) <= sqi_data_in;
@@ -193,6 +209,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 					elsif (counter = 19) then
 						new_framebuffer_buf(151 downto 0) <= framebuffer_buf(151 downto 0);
 						new_framebuffer_buf(157 downto 152) <= sqi_data_in(5 downto 0);
+					else
+						new_framebuffer_buf <= framebuffer_buf;
 					end if;
 					new_counter <= counter + 1;
 					new_state <= READ_FRAMEBUFFER;
@@ -209,6 +227,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				row := unsigned(y);
 				column := unsigned(x);
 				new_calc_buf_out(23 downto 8) <= calc_buf_out(23 downto 8);
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (counter < 3) then
 					if (row = 0 and counter = 0) then
 						new_calc_buf_out(7 downto 0) <= (others => '0');
@@ -235,6 +255,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				row := unsigned(y);
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (column = 0) then
 					sqi_address <= std_logic_vector(resize(((row) + (column * 158)), sqi_address'length));
 					sqi_data_out(6 downto 1) <= calc_buf_in;
@@ -249,6 +271,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				new_calc_buf_out <= calc_buf_out;
 				ready <= '0';
 				sqi_enabled <= '1';
+				new_framebuffer_buf <= framebuffer_buf;
 				if (sqi_finished = '1') then
 					new_row_buf <= sqi_data_in(5 downto 0);
 					new_state <= WRITE_ROW_2;
@@ -262,6 +285,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				row := unsigned(y);
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
+				new_row_buf <= row_buf;
+				new_framebuffer_buf <= framebuffer_buf;
 				sqi_address <= std_logic_vector(resize(((row - 1) + (column * 158)), sqi_address'length));
 				sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
 				sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
@@ -270,6 +295,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				ready <= '0';
 				sqi_enabled <= '1';
 				new_calc_buf_out <= calc_buf_out;
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (sqi_finished = '1') then
 					new_state <= WRITE_ROW_3;
 				else
@@ -281,6 +308,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				row := unsigned(y);
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				sqi_address <= std_logic_vector(resize(((row) + (column * 159)), sqi_address'length));
 				sqi_data_out(6 downto 1) <= calc_buf_in;
 				sqi_data_out(0) <= '0';
@@ -290,6 +319,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw)
 				ready <= '0';
 				sqi_enabled <= '1';
 				new_calc_buf_out <= calc_buf_out;
+				new_framebuffer_buf <= framebuffer_buf;
+				new_row_buf <= row_buf;
 				if (sqi_finished = '1') then
 					new_state <= IDLE;
 				else
