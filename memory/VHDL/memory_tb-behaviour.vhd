@@ -53,17 +53,17 @@ begin
 	(others => '0') after 400 ns;
 
    rw <= '1' after 0 ns,
-	 '0' after 900 ns,
+	 '0' after 880 ns,
 	 '1' after 1000 ns,
 	 '0' after 2800 ns;
    ce <= '1' after 0 ns,
 	 '0' after 120 ns,
 	 '1' after 400 ns,
 	 '0' after 760 ns,
-	 '1' after 900 ns,
+	 '1' after 880 ns,
 	 '0' after 960 ns,
 	 '1' after 1000 ns,
-	 '0' after 2700 ns,
+	 '0' after 2680 ns,
 	 '1' after 2800 ns,
 	 '0' after 2900 ns;
    mode <= '0' after 0 ns,
@@ -75,14 +75,14 @@ begin
    sqi_finished <= '0' after 0 ns,
 		   '1' after 160 ns,
 		   '0' after 200 ns,
-		   '1' after 260 ns,
-		   '0' after 300 ns,
+		   '1' after 270 ns,
+		   '0' after 320 ns,
 		   '1' after 360 ns,
 		   '0' after 400 ns,
 		   '1' after 560 ns,
 		   '0' after 600 ns,
-		   '1' after 660 ns,
-		   '0' after 700 ns,
+		   '1' after 680 ns,
+		   '0' after 760 ns,
 		   '1' after 960 ns;
 
    sqi_data_in <= (0 => '1', others => '0') after 0 ns,
