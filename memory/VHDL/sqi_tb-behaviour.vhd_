@@ -45,10 +45,10 @@ end component;
 
 		signal counter : unsigned(3 downto 0); 
 begin
-   test: sqi port map (reset, clk, en,high_z,single,RW, address, data_in, data_out, SCK, MOSI,MISO, CS,done );
+   test: sqi port map (reset, clk, en,high_z,single,new_data,RW, address, data_in, data_out, SCK, MOSI,MISO, CS,done );
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
-	 reset <= '0' after 0 ns, '1' after 1 ns, '0' after 50 ns;
+	 reset <= '1' after 0 ns, '1' after 51 ns, '0' after 100 ns;
   
 	
 	 address <= "111"&"1111"&"1111"& "1111";
@@ -60,7 +60,7 @@ begin
 			data_in <= "01101001";
 			en <= '0';
 			single <= '1'; 
-			wait for 480 ns;
+			wait for 800 ns;
 			en <= '1'; 
 			wait for 40 ns; 
 			RW <= '1';

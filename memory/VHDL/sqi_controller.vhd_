@@ -7,6 +7,7 @@ entity sqi_controller is
 				en					 : in  std_logic; 
 			  RW         : in  std_logic;
 				high_z					: out std_logic; 
+				new_data			: out std_logic; 
 				single					: in  std_logic; 
 				data_in 		 : in  std_logic_vector(7 downto 0);  
         shift_data_in    : in std_logic_vector(7 downto 0);
@@ -20,6 +21,7 @@ entity sqi_controller is
         count_in   : in  std_logic_vector(3 downto 0);
         count_out  : out std_logic_vector(3 downto 0);
 				--shift register interface 
+				shift_clk  : in std_logic; 
         reg_shift  : out std_logic;
         reg_load   : out std_logic;
         done       : out std_logic;

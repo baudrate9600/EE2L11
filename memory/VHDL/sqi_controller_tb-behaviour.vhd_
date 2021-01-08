@@ -1,0 +1,167 @@
+library IEEE;
+use IEEE.std_logic_1164.ALL;
+
+architecture behaviour of sqi_controller_tb is
+   component sqi_controller
+      port(clk        : in  std_logic;
+           reset      : in  std_logic;
+   				en					 : in  std_logic; 
+   			  RW         : in  std_logic;
+   				high_z					: out std_logic; 
+   				new_data			: out std_logic; 
+   				single					: in  std_logic; 
+   				data_in 		 : in  std_logic_vector(7 downto 0);  
+           shift_data_in    : in std_logic_vector(7 downto 0);
+   				data_read 	: out std_logic_vector(7 downto 0); 
+           data_out   : out std_logic_vector(7 downto 0);
+   				address 		 : in  std_logic_vector(14 downto 0); 
+   				count_reset: out std_logic;
+           count_en   : out std_logic;
+           count_load : out std_logic;
+           count_in   : in  std_logic_vector(3 downto 0);
+           count_out  : out std_logic_vector(3 downto 0);
+           reg_shift  : out std_logic;
+           reg_load   : out std_logic;
+           done       : out std_logic;
+   				shift_in  : in std_logic_vector(3 downto 0); 
+   				shift_reset : out std_logic; 
+   				sck 					 : out std_logic; 
+   				cs 					 : out std_logic; 
+   				MOSI 					 : out std_logic_vector (3 downto 0)); 
+   
+   end component;
+	--All the components
+	COMPONENT counter16 IS
+		PORT 
+		(
+			clk       : IN std_logic;
+			reset     : IN std_logic;
+			load      : IN std_logic;
+			enable    : IN std_logic;
+			count_in  : IN std_logic_vector(3 DOWNTO 0);
+			count_out : OUT std_logic_vector(3 DOWNTO 0)
+		);
+	END COMPONENT;
+
+	COMPONENT shift_register IS
+		PORT 
+		(
+			clk       : IN std_logic;
+			reset     : IN std_logic;
+			load      : IN std_logic;
+			shift     : IN std_logic;
+			data_in   : IN std_logic_vector(7 DOWNTO 0);
+			data_out  : OUT std_logic_vector(7 DOWNTO 0);
+			shift_in  : IN std_logic_vector(3 DOWNTO 0);
+			shift_out : OUT std_logic_vector(3 DOWNTO 0)
+		);
+	END COMPONENT;
+   	SIGNAL count_reset: std_logic;
+	SIGNAL count_en   : std_logic;
+	SIGNAL count_load : std_logic;
+	SIGNAL count_in   : std_logic_vector(3 DOWNTO 0);
+	SIGNAL count_out  : std_logic_vector(3 DOWNTO 0);
+ 
+
+	SIGNAL data_wire  : std_logic_vector(7 DOWNTO 0);
+	SIGNAL data_read  : std_logic_vector(7 DOWNTO 0); 
+	SIGNAL data_read_in: std_logic_vector (7 DOWNTO 0); 
+
+	SIGNAL load_reg   : std_logic;
+	SIGNAL shift_reg  : std_logic;
+	SIGNAL shift_in   : std_logic_vector(3 DOWNTO 0);
+	SIGNAL shift_out  : std_logic_vector(3 DOWNTO 0);
+  SIGNAL shift_reset : std_logic; 
+
+	SIGNAL mux_select : std_logic_vector(2 DOWNTO 0); 
+
+	SIGNAL spi_wire   : std_logic;
+
+	SIGNAL reset    	:std_logic;
+  SIGNAL   clk      	:  std_logic;
+  SIGNAL      en       	:   std_logic;
+	SIGNAL			high_z				:  std_logic; -- When high-z is high the MOSI is disconected			
+	SIGNAL			single				:  std_logic;	
+	SIGNAL			new_data  :  std_logic;			
+	SIGNAL			RW	 				:  std_logic;
+	SIGNAL			address  	:  std_logic_vector (14 downto 0); 
+  SIGNAL 				data_in  	:  std_logic_vector(7 downto 0);
+	SIGNAL			data_out 	:  std_logic_vector(7 downto 0);
+		
+	SIGNAL			SCK	 				:  std_logic;
+	SIGNAL			MOSI     	:  std_logic_vector(3 downto 0);	
+	SIGNAL			MISO     	:   std_logic_vector(3 downto 0); 
+	SIGNAL			CS       	:  std_logic;
+
+					
+   				
+			
+   	signal 			done     	:  std_logic;
+			signal counter : unsigned(3 downto 0); 
+begin
+   test: sqi_controller
+	PORT MAP
+	(clk,reset,en,RW,high_z,new_data,single,data_in,data_read_in, data_out,data_wire,address,count_reset,count_en,count_load,count_out,count_in, 
+		shift_reg,load_reg,done,shift_out,shift_reset,SCK,CS,MOSI );
+		u0 : counter16
+	PORT MAP(clk, count_reset, count_load, count_en, count_in, count_out);
+	u1 : shift_register
+	PORT MAP(clk, shift_reset, load_reg, shift_reg, data_wire, data_read_in, MISO, shift_out);
+   clk <= '0' after 0 ns,
+          '1' after 20 ns when clk /= '1' else '0' after 20 ns;
+ 
+
+reset <= '1' after 0 ns, '1' after 51 ns, '0' after 100 ns;
+  
+	
+	 address <= "111"&"1111"&"1111"& "1111";
+	 
+
+		process
+		begin
+			RW <= '1';
+			data_in <= "01101001";
+			en <= '0';
+			single <= '1'; 
+			wait for 800 ns;
+			en <= '1'; 
+			wait for 40 ns; 
+			RW <= '1';
+			en <= '0'; 
+			
+			
+			wait for 500 ns; 
+			single <= '0'; 
+			en <= '1';
+			wait for 40 ns; 
+			en <= '0'; 
+			
+			
+			wait for 1000 ns; 
+			RW <= '0';
+			data_in <= "10000001";
+			en <= '1';
+			wait for 60 ns; 
+			en <= '0';
+			
+			
+			wait; 
+		end process; 
+		
+		process(reset,SCK) begin 
+			if reset = '1' then 
+					MISO<= "0000"; 
+					counter <= "0000"; 
+			elsif falling_edge(SCK) then 
+					if(high_z = '1') then
+					counter <= counter + 1; 
+						MISO <= std_logic_vector(counter);
+					else 
+						MISO <= "0000"; 
+					end if; 
+			end if; 
+		end process; 
+
+ 
+end behaviour;
+

@@ -21,6 +21,7 @@ entity sqi_controller is
         count_in   : in  std_logic_vector(3 downto 0);
         count_out  : out std_logic_vector(3 downto 0);
 				--shift register interface 
+				shift_clk  : out std_logic; 
         reg_shift  : out std_logic;
         reg_load   : out std_logic;
         done       : out std_logic;

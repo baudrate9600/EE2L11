@@ -17,11 +17,8 @@ entity sqi is
 				SCK	 				: out std_logic;
 				MOSI     	: out std_logic_vector(3 downto 0);	
 				MISO     	: in  std_logic_vector(3 downto 0); 
-				CS       	: out std_logic;
-
-					
-   				
-			  busy     	: out std_logic;
+				CS       	: out std_logic;   				
+			
    				done     	: out std_logic
 	);
 end sqi;

@@ -1,7 +1,7 @@
 (DELAYFILE
   (SDFVERSION  "OVI 3.0")
   (DESIGN      "shift_register")
-  (DATE        "Thu Dec 03 21:05:10 CET 2020")
+  (DATE        "Sat Dec 12 20:03:10 CET 2020")
   (VENDOR      "Cadence, Inc.")
   (PROGRAM     "Genus(TM) Synthesis Solution")
   (VERSION     "17.11-s014_1")

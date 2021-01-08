@@ -1,0 +1,115 @@
+library IEEE;
+use IEEE.std_logic_1164.ALL;
+
+architecture behaviour of sram_test is
+component line_buffer is
+   port(address  : in  std_logic_vector(7 downto 0);
+        data_in  : in  std_logic_vector(7 downto 0);
+        data_out : out std_logic_vector(7 downto 0);
+        write    : in  std_logic);
+	end component;
+	component sram_interface is
+	port(CLK    : in  std_logic;
+				RESET  : in  std_logic; 
+				EN			 : in  std_logic; 
+				RW			 : in  std_logic; 
+				SINGLE : in  std_logic; 
+				DATA_IN : in std_logic_vector(7 downto 0);  
+				DATA_OUT : out std_logic_vector(7 downto 0 );
+				ADDRESS	: in std_logic_vector(14 downto 0); 
+				done   : out std_logic; 
+				new_data : out std_logic; 
+        SCK    : out std_logic;
+        CS     : out std_logic;
+				SO			 : INOUT std_logic_vector(3 downto 0));
+	end component;
+	signal i_RW : std_logic; 
+	signal I_SINGLE  : std_logic; 
+	signal I_done    : std_logic; 
+	signal i_new_data : std_logic; 
+	signal i_EN 					: std_logic; 
+	signal i_data_in : std_logic_vector(7 downto 0); 
+	signal i_address: std_logic_vector(14 downto 0); 
+
+	TYPE test_state IS (S0,S1,S2,S3,S4,S5,S6);
+	signal state : test_state; 
+	signal new_state : test_state; 
+begin
+
+
+	--u0:line_buffer port map(i_address, i_data_in, data_out, i_write);
+	u0 : sram_interface port map(
+			CLK => CLK,
+			RESET => RESET, 
+			EN			=> i_EN,
+			RW			=> i_RW,
+			SINGLE => i_SINGLE, 
+			DATA_IN =>  i_DATA_IN, 
+			DATA_OUT => DATA_OUT, 
+			ADDRESS  => i_ADDRESS, 
+			done 				=> i_done, 
+			new_data => i_new_data, 
+			SCK				 => SCK, 
+			CS 				 => CS, 
+			SO				 => SO );
+	PROCESS (clk, new_state)
+	BEGIN
+		IF rising_edge(clk) THEN
+			IF reset = '1' THEN
+				state <= S0;
+			ELSE
+				state <= new_state;
+			END IF;
+		END IF;
+	END PROCESS;
+
+	PROCESS (state) 
+	BEGIN 
+			i_data_in <= x"F0";
+			i_address <= (others => '0');    
+			i_single <= '1'; 
+			i_EN <= '0'; 
+		case state is 
+			when S0 => 
+					if(i_done = '1') then 
+						new_state <= S1; 
+					else 
+						new_state <= S0; 
+					end if;
+					i_RW <= '0'; 
+			when S1 => 
+					i_EN <= '1';
+					i_RW <= '0';  
+					new_state <= S1; 
+			when S2 => 
+					i_EN <= '0';
+					i_RW <= '0'; 
+					if(i_done = '1') then 
+							new_state <= S3; 
+					else 
+							new_state <= S2; 
+					end if; 
+			when S3 => 
+					i_RW <= '1'; 
+					new_state <= S4; 
+			when S4 => 
+					i_EN <= '0'; 
+					i_RW <= '1'; 
+					new_state <= S5; 
+			when S5 =>
+					i_RW <= '1'; 
+					if(i_done = '1') then 
+						new_state <= S6; 
+					else 
+						new_state <= S5; 
+					end if; 
+			when S6 => 
+					i_RW <= '1'; 
+					new_state <= s6; 
+		end case;
+	end process; 
+					
+
+
+end behaviour;
+

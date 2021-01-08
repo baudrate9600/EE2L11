@@ -1,0 +1,318 @@
+
+library ieee;
+use ieee.std_logic_1164.all;
+--library tcb018gbwp7t;
+--use tcb018gbwp7t.all;
+
+architecture synthesised of sqi_controller is
+
+  component INVD0BWP7T
+    port(I : in std_logic; ZN : out std_logic);
+  end component;
+
+  component INVD4BWP7T
+    port(I : in std_logic; ZN : out std_logic);
+  end component;
+
+  component BUFFD4BWP7T
+    port(I : in std_logic; Z : out std_logic);
+  end component;
+
+  component ND2D4BWP7T
+    port(A1, A2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component LHQD1BWP7T
+    port(E, D : in std_logic; Q : out std_logic);
+  end component;
+
+  component OAI211D0BWP7T
+    port(A1, A2, B, C : in std_logic; ZN : out std_logic);
+  end component;
+
+  component AOI22D0BWP7T
+    port(A1, A2, B1, B2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component IOA21D0BWP7T
+    port(A1, A2, B : in std_logic; ZN : out std_logic);
+  end component;
+
+  component AO22D0BWP7T
+    port(A1, A2, B1, B2 : in std_logic; Z : out std_logic);
+  end component;
+
+  component OAI211D1BWP7T
+    port(A1, A2, B, C : in std_logic; ZN : out std_logic);
+  end component;
+
+  component OAI21D0BWP7T
+    port(A1, A2, B : in std_logic; ZN : out std_logic);
+  end component;
+
+  component AOI222D0BWP7T
+    port(A1, A2, B1, B2, C1, C2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component ND2D1BWP7T
+    port(A1, A2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component INR3D0BWP7T
+    port(A1, B1, B2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component ND4D0BWP7T
+    port(A1, A2, A3, A4 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component IND4D0BWP7T
+    port(A1, B1, B2, B3 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component AO221D0BWP7T
+    port(A1, A2, B1, B2, C : in std_logic; Z : out std_logic);
+  end component;
+
+  component AN2D4BWP7T
+    port(A1, A2 : in std_logic; Z : out std_logic);
+  end component;
+
+  component OR2D4BWP7T
+    port(A1, A2 : in std_logic; Z : out std_logic);
+  end component;
+
+  component NR3D0BWP7T
+    port(A1, A2, A3 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component INVD1BWP7T
+    port(I : in std_logic; ZN : out std_logic);
+  end component;
+
+  component NR2XD0BWP7T
+    port(A1, A2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component IND2D1BWP7T
+    port(A1, B1 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component CKAN2D4BWP7T
+    port(A1, A2 : in std_logic; Z : out std_logic);
+  end component;
+
+  component INR2D1BWP7T
+    port(A1, B1 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component INR2XD0BWP7T
+    port(A1, B1 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component IND3D0BWP7T
+    port(A1, B1, B2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component IND3D1BWP7T
+    port(A1, B1, B2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component ND2D0BWP7T
+    port(A1, A2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component AN2D1BWP7T
+    port(A1, A2 : in std_logic; Z : out std_logic);
+  end component;
+
+  component MOAI22D0BWP7T
+    port(A1, A2, B1, B2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component OA21D0BWP7T
+    port(A1, A2, B : in std_logic; Z : out std_logic);
+  end component;
+
+  component NR2D0BWP7T
+    port(A1, A2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component INR2D0BWP7T
+    port(A1, B1 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component NR2D1BWP7T
+    port(A1, A2 : in std_logic; ZN : out std_logic);
+  end component;
+
+  component EDFCNQD1BWP7T
+    port(CDN, CP, D, E : in std_logic; Q : out std_logic);
+  end component;
+
+  component OAI31D0BWP7T
+    port(A1, A2, A3, B : in std_logic; ZN : out std_logic);
+  end component;
+
+  component DFNCND1BWP7T
+    port(CDN, CPN, D : in std_logic; Q, QN : out std_logic);
+  end component;
+
+  component DFKCNQD1BWP7T
+    port(CP, CN, D : in std_logic; Q : out std_logic);
+  end component;
+
+  component AN2D0BWP7T
+    port(A1, A2 : in std_logic; Z : out std_logic);
+  end component;
+
+  component BUFFD1BWP7T
+    port(I : in std_logic; Z : out std_logic);
+  end component;
+
+  component DFKCND1BWP7T
+    port(CP, CN, D : in std_logic; Q, QN : out std_logic);
+  end component;
+
+  component TIELBWP7T
+    port(ZN : out std_logic);
+  end component;
+
+  signal new_state : std_logic_vector(2 downto 0);
+  signal state : std_logic_vector(2 downto 0);
+  signal SHIFT_nLOAD, n_0, n_1, n_2, n_3 : std_logic;
+  signal n_4, n_5, n_6, n_7, n_8 : std_logic;
+  signal n_9, n_10, n_11, n_12, n_13 : std_logic;
+  signal n_14, n_15, n_16, n_17, n_18 : std_logic;
+  signal n_19, n_20, n_21, n_22, n_23 : std_logic;
+  signal n_24, n_25, n_26, n_27, n_28 : std_logic;
+  signal n_29, n_30, n_31, n_32, n_33 : std_logic;
+  signal n_34, n_35, n_36, n_37, n_38 : std_logic;
+  signal n_39, n_40, n_41, n_42, n_43 : std_logic;
+  signal n_44, n_45, n_46, n_47, n_48 : std_logic;
+  signal n_49, n_50, n_51, n_52, n_53 : std_logic;
+  signal n_54, n_55, n_56, n_57, n_58 : std_logic;
+  signal n_59, n_60, n_61, n_62, n_63 : std_logic;
+  signal n_64, n_65, n_66, n_67, n_68 : std_logic;
+  signal n_69, n_71, n_75, n_76, n_124 : std_logic;
+  signal n_125 : std_logic;
+
+begin
+
+  count_out(0) <= count_load;
+  count_out(1) <= count_load;
+  count_out(2) <= count_load;
+  count_out(3) <= count_load;
+  g1245 : INVD0BWP7T port map(I => cs, ZN => n_71);
+  g1244 : INVD4BWP7T port map(I => count_reset, ZN => count_en);
+  g1246 : BUFFD4BWP7T port map(I => reset, Z => shift_reset);
+  g1243 : ND2D4BWP7T port map(A1 => clk, A2 => n_71, ZN => sck);
+  new_state_reg_0 : LHQD1BWP7T port map(E => n_68, D => n_69, Q => new_state(0));
+  g2693 : OAI211D0BWP7T port map(A1 => n_37, A2 => n_32, B => n_67, C => n_68, ZN => n_69);
+  new_state_reg_2 : LHQD1BWP7T port map(E => n_68, D => n_66, Q => new_state(2));
+  new_state_reg_1 : LHQD1BWP7T port map(E => n_68, D => n_65, Q => new_state(1));
+  g2696 : AOI22D0BWP7T port map(A1 => n_63, A2 => count_in(0), B1 => n_27, B2 => state(0), ZN => n_67);
+  g2697 : ND2D4BWP7T port map(A1 => n_62, A2 => n_42, ZN => data_out(5));
+  g2698 : IOA21D0BWP7T port map(A1 => n_54, A2 => count_in(2), B => n_76, ZN => n_66);
+  g2699 : ND2D4BWP7T port map(A1 => n_59, A2 => n_47, ZN => data_out(4));
+  g2700 : ND2D4BWP7T port map(A1 => n_60, A2 => n_43, ZN => data_out(7));
+  g2701 : ND2D4BWP7T port map(A1 => n_61, A2 => n_45, ZN => data_out(0));
+  g2702 : ND2D4BWP7T port map(A1 => n_35, A2 => n_64, ZN => MOSI(0));
+  g2703 : AO22D0BWP7T port map(A1 => n_51, A2 => n_125, B1 => en, B2 => n_31, Z => n_65);
+  g2704 : OAI211D1BWP7T port map(A1 => n_25, A2 => n_34, B => n_16, C => n_18, ZN => n_64);
+  g2705 : ND2D4BWP7T port map(A1 => n_52, A2 => n_42, ZN => new_data);
+  g2706 : OAI21D0BWP7T port map(A1 => n_33, A2 => count_in(2), B => n_53, ZN => n_63);
+  g2707 : ND2D4BWP7T port map(A1 => n_50, A2 => n_57, ZN => data_out(2));
+  g2708 : ND2D4BWP7T port map(A1 => n_48, A2 => n_55, ZN => data_out(1));
+  g2709 : ND2D4BWP7T port map(A1 => n_49, A2 => n_56, ZN => data_out(6));
+  g2710 : AOI222D0BWP7T port map(A1 => n_44, A2 => data_in(1), B1 => n_41, B2 => address(1), C1 => n_36, C2 => address(9), ZN => n_62);
+  g2711 : ND2D4BWP7T port map(A1 => n_58, A2 => n_46, ZN => data_out(3));
+  g2712 : AOI22D0BWP7T port map(A1 => n_36, A2 => address(12), B1 => n_44, B2 => data_in(4), ZN => n_61);
+  g2713 : AOI22D0BWP7T port map(A1 => n_41, A2 => address(3), B1 => n_44, B2 => data_in(3), ZN => n_60);
+  g2714 : AOI22D0BWP7T port map(A1 => n_44, A2 => data_in(0), B1 => done, B2 => RW, ZN => n_59);
+  g2715 : ND2D1BWP7T port map(A1 => n_44, A2 => data_in(7), ZN => n_58);
+  g2716 : ND2D1BWP7T port map(A1 => n_44, A2 => data_in(6), ZN => n_57);
+  g2717 : ND2D1BWP7T port map(A1 => n_44, A2 => data_in(2), ZN => n_56);
+  g2718 : ND2D1BWP7T port map(A1 => n_44, A2 => data_in(5), ZN => n_55);
+  g2719 : INR3D0BWP7T port map(A1 => n_125, B1 => count_in(0), B2 => n_38, ZN => n_54);
+  g2720 : ND4D0BWP7T port map(A1 => state(2), A2 => n_24, A3 => count_in(3), A4 => count_in(1), ZN => n_53);
+  g2721 : IND4D0BWP7T port map(A1 => n_30, B1 => count_in(0), B2 => count_in(3), B3 => count_in(2), ZN => n_52);
+  g2722 : AO221D0BWP7T port map(A1 => n_38, A2 => count_in(2), B1 => n_23, B2 => n_13, C => n_22, Z => n_51);
+  g2723 : AOI22D0BWP7T port map(A1 => n_41, A2 => address(6), B1 => n_36, B2 => address(14), ZN => n_50);
+  g2724 : AOI22D0BWP7T port map(A1 => n_41, A2 => address(2), B1 => n_36, B2 => address(10), ZN => n_49);
+  g2725 : AOI22D0BWP7T port map(A1 => n_41, A2 => address(5), B1 => n_36, B2 => address(13), ZN => n_48);
+  g2726 : AOI22D0BWP7T port map(A1 => n_41, A2 => address(0), B1 => n_36, B2 => address(8), ZN => n_47);
+  g2727 : ND2D1BWP7T port map(A1 => n_41, A2 => address(7), ZN => n_46);
+  g2728 : AN2D4BWP7T port map(A1 => n_29, A2 => n_37, Z => high_z);
+  g2729 : ND2D1BWP7T port map(A1 => n_41, A2 => address(4), ZN => n_45);
+  g2730 : OR2D4BWP7T port map(A1 => n_40, A2 => done, Z => reg_load);
+  g2731 : ND2D4BWP7T port map(A1 => n_39, A2 => n_30, ZN => reg_shift);
+  g2732 : ND2D1BWP7T port map(A1 => n_36, A2 => address(11), ZN => n_43);
+  g2733 : NR3D0BWP7T port map(A1 => n_28, A2 => n_17, A3 => n_13, ZN => n_44);
+  g2734 : INVD1BWP7T port map(I => done, ZN => n_42);
+  g2735 : OR2D4BWP7T port map(A1 => n_31, A2 => reset, Z => count_reset);
+  g2736 : NR2XD0BWP7T port map(A1 => n_28, A2 => SHIFT_nLOAD, ZN => n_40);
+  g2737 : IND2D1BWP7T port map(A1 => n_28, B1 => SHIFT_nLOAD, ZN => n_39);
+  g2738 : CKAN2D4BWP7T port map(A1 => n_31, A2 => n_15, Z => done);
+  g2739 : INR2D1BWP7T port map(A1 => n_26, B1 => n_28, ZN => n_41);
+  g2740 : ND2D1BWP7T port map(A1 => n_32, A2 => shift_in(0), ZN => n_35);
+  g2741 : INR2XD0BWP7T port map(A1 => n_26, B1 => count_in(0), ZN => n_34);
+  g2742 : IND3D0BWP7T port map(A1 => RW, B1 => n_21, B2 => state(1), ZN => n_33);
+  g2743 : IND3D0BWP7T port map(A1 => n_17, B1 => RW, B2 => n_14, ZN => n_38);
+  g2744 : IND3D1BWP7T port map(A1 => n_17, B1 => count_in(0), B2 => count_in(2), ZN => n_37);
+  g2745 : INR2D1BWP7T port map(A1 => n_25, B1 => n_28, ZN => n_36);
+  g2746 : INVD0BWP7T port map(I => n_30, ZN => n_29);
+  g2747 : ND2D0BWP7T port map(A1 => n_16, A2 => en, ZN => n_27);
+  g2748 : ND2D1BWP7T port map(A1 => n_20, A2 => n_14, ZN => n_76);
+  g2749 : ND2D1BWP7T port map(A1 => n_16, A2 => n_14, ZN => n_32);
+  g2750 : AN2D1BWP7T port map(A1 => n_16, A2 => state(0), Z => n_31);
+  g2751 : ND2D1BWP7T port map(A1 => n_20, A2 => n_18, ZN => n_30);
+  g2752 : ND2D1BWP7T port map(A1 => n_125, A2 => n_18, ZN => n_28);
+  g2753 : MOAI22D0BWP7T port map(A1 => n_13, A2 => single, B1 => n_13, B2 => single, ZN => n_24);
+  g2754 : ND2D1BWP7T port map(A1 => n_20, A2 => state(0), ZN => n_75);
+  g2755 : OAI21D0BWP7T port map(A1 => state(0), A2 => count_in(0), B => n_21, ZN => n_23);
+  g2756 : AN2D4BWP7T port map(A1 => n_19, A2 => state(0), Z => cs);
+  g2757 : OA21D0BWP7T port map(A1 => state(0), A2 => RW, B => count_in(0), Z => n_22);
+  g2758 : NR3D0BWP7T port map(A1 => count_in(1), A2 => count_in(3), A3 => n_13, ZN => n_26);
+  g2759 : NR2D0BWP7T port map(A1 => n_17, A2 => count_in(2), ZN => n_25);
+  g2760 : NR2XD0BWP7T port map(A1 => state(1), A2 => reset, ZN => n_19);
+  g2761 : INR2D0BWP7T port map(A1 => count_in(3), B1 => count_in(1), ZN => n_21);
+  g2762 : INR2XD0BWP7T port map(A1 => state(2), B1 => state(1), ZN => n_20);
+  g2763 : INR2D1BWP7T port map(A1 => state(1), B1 => state(2), ZN => n_125);
+  g2764 : NR2D1BWP7T port map(A1 => state(0), A2 => reset, ZN => n_18);
+  g2765 : IND2D1BWP7T port map(A1 => count_in(3), B1 => count_in(1), ZN => n_17);
+  g2766 : ND2D0BWP7T port map(A1 => state(2), A2 => state(1), ZN => n_68);
+  g2767 : NR2XD0BWP7T port map(A1 => state(2), A2 => state(1), ZN => n_16);
+  g2769 : INVD1BWP7T port map(I => reset, ZN => n_15);
+  g2771 : INVD1BWP7T port map(I => count_in(2), ZN => n_13);
+  data_read_reg_6 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(4), E => n_4, Q => n_11);
+  data_read_reg_1 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(3), E => n_4, Q => n_6);
+  data_read_reg_0 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(1), E => n_4, Q => n_5);
+  data_read_reg_7 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(6), E => n_4, Q => n_12);
+  data_read_reg_4 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(0), E => n_4, Q => n_9);
+  data_read_reg_3 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(7), E => n_4, Q => n_8);
+  data_read_reg_2 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(5), E => n_4, Q => n_7);
+  data_read_reg_5 : EDFCNQD1BWP7T port map(CDN => n_1, CP => clk, D => shift_data_in(2), E => n_0, Q => n_10);
+  g1273 : OAI31D0BWP7T port map(A1 => count_in(0), A2 => n_2, A3 => n_76, B => n_75, ZN => n_4);
+  SHIFT_nLOAD_reg : DFNCND1BWP7T port map(CDN => n_1, CPN => clk, D => n_3, Q => SHIFT_nLOAD, QN => n_124);
+  state_reg_1 : DFKCNQD1BWP7T port map(CP => clk, CN => new_state(1), D => n_1, Q => state(1));
+  state_reg_2 : DFKCNQD1BWP7T port map(CP => clk, CN => new_state(2), D => n_1, Q => state(2));
+  g1278 : AN2D0BWP7T port map(A1 => n_125, A2 => n_124, Z => n_3);
+  g1279 : ND2D0BWP7T port map(A1 => count_in(3), A2 => count_in(2), ZN => n_2);
+  g1280 : INVD1BWP7T port map(I => shift_reset, ZN => n_1);
+  drc_bufs : BUFFD4BWP7T port map(I => n_12, Z => data_read(7));
+  drc_bufs1281 : BUFFD4BWP7T port map(I => n_5, Z => data_read(0));
+  drc_bufs1282 : BUFFD4BWP7T port map(I => n_6, Z => data_read(1));
+  drc_bufs1283 : BUFFD4BWP7T port map(I => n_7, Z => data_read(2));
+  drc_bufs1284 : BUFFD4BWP7T port map(I => n_8, Z => data_read(3));
+  drc_bufs1285 : BUFFD4BWP7T port map(I => n_9, Z => data_read(4));
+  drc_bufs1286 : BUFFD4BWP7T port map(I => n_10, Z => data_read(5));
+  drc_bufs1287 : BUFFD4BWP7T port map(I => n_11, Z => data_read(6));
+  drc_bufs1291 : BUFFD1BWP7T port map(I => n_4, Z => n_0);
+  drc_bufs2772 : BUFFD4BWP7T port map(I => shift_in(3), Z => MOSI(3));
+  drc_bufs2775 : BUFFD4BWP7T port map(I => shift_in(1), Z => MOSI(1));
+  drc_bufs2778 : BUFFD4BWP7T port map(I => shift_in(2), Z => MOSI(2));
+  state_reg_0 : DFKCND1BWP7T port map(CP => clk, CN => new_state(0), D => n_1, Q => state(0), QN => n_14);
+  tie_0_cell : TIELBWP7T port map(ZN => count_load);
+
+end synthesised;

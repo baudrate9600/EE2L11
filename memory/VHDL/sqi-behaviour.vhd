@@ -22,6 +22,7 @@ ARCHITECTURE behaviour OF sqi IS
 	SIGNAL mux_select : std_logic_vector(2 DOWNTO 0); 
 
 	SIGNAL spi_wire   : std_logic;
+	SIGNAL shift_clk  : std_logic; 
  
 	--All the components
 	COMPONENT counter16 IS
@@ -72,6 +73,7 @@ ARCHITECTURE behaviour OF sqi IS
 			count_in   : IN std_logic_vector(3 DOWNTO 0);
 			count_out  : OUT std_logic_vector(3 DOWNTO 0);
 			--shift register interface
+			shift_clk  : out std_logic; 
 			reg_shift : OUT std_logic;
 			reg_load  : OUT std_logic;
 			done      : OUT std_logic;
@@ -88,10 +90,10 @@ BEGIN
 	u0 : counter16
 	PORT MAP(clk, count_reset, count_load, count_en, count_in, count_out);
 	u1 : shift_register
-	PORT MAP(clk, shift_reset, load_reg, shift_reg, data_wire, data_read_in, MISO, shift_out);
+	PORT MAP(shift_clk, shift_reset, load_reg, shift_reg, data_wire, data_read_in, MISO, shift_out);
 	u2 : sqi_controller
 	PORT MAP
-	(clk,reset,en,RW,high_z,new_data,single,data_in,data_read_in, data_out,data_wire,address,count_reset,count_en,count_load,count_out,count_in, 
+	(clk,reset,en,RW,high_z,new_data,single,data_in,data_read_in, data_out,data_wire,address,count_reset,count_en,count_load,count_out,count_in, shift_clk,
 		shift_reg,load_reg,done,shift_out,shift_reset,SCK,CS,MOSI );
 
  

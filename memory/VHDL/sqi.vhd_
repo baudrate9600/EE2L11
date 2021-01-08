@@ -7,7 +7,8 @@ entity sqi is
         clk      	: in std_logic;
         en       	: in  std_logic;
 				high_z				: out std_logic; -- When high-z is high the MOSI is disconected			
-				single				: in std_logic;				
+				single				: in std_logic;	
+				new_data  : out std_logic;			
 				RW	 				: in std_logic;
 				address  	: in std_logic_vector (14 downto 0); 
    				data_in  	: in std_logic_vector(7 downto 0);
@@ -20,7 +21,7 @@ entity sqi is
 
 					
    				
-			  busy     	: out std_logic;
+			
    				done     	: out std_logic
 	);
 end sqi;

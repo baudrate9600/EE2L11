@@ -1,0 +1,27 @@
+library IEEE;
+use IEEE.std_logic_1164.ALL;
+use IEEE.numeric_std.ALL;
+
+architecture behaviour of line_buffer is
+type mem_type is array(0 to 19) of std_logic_vector(7 downto 0); 
+signal mem : mem_type; 
+signal i_address : std_logic_vector(7 downto 0); 
+begin
+	process(address) is begin
+		if( unsigned(address) > 19) then 
+				i_address <= (others => '0');
+			else
+				i_address <= address; 
+			end if; 
+	end process; 
+	ram_lat : process(i_address, write,data_in) is 
+	begin 
+		if write = '1' then 
+			mem(to_integer(unsigned(i_address))) <= data_in;
+		end if; 
+			
+	end process; 
+data_out <= mem(to_integer(unsigned(i_address)));
+	
+end behaviour;
+
