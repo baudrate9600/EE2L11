@@ -183,7 +183,7 @@ BEGIN
 					 
 					new_data <= '1'; 
 					RW_LATCH_ENABLE <= '1';
-					
+					SINGLE_LATCH_ENABLE <= '1';
 				WHEN INSTR => 
 					
 				

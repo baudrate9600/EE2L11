@@ -1,27 +1,27 @@
---SQI Module 
+--SQI Module
 library IEEE;
-use IEEE.std_logic_1164.ALL;
+use IEEE.std_logic_1164.all;
 
 entity sqi is
-   port(reset    	: in std_logic;
-        clk      	: in std_logic;
-        en       	: in  std_logic;
+	port (
+		reset : in std_logic;
+		clk : in std_logic;
+		en : in std_logic;
 
-				high_z				: out std_logic; -- When high-z is high the MOSI is disconected			
-				single				: in std_logic;	
-				new_data  : out std_logic;			
-				RW	 				: in std_logic;
-				address  	: in std_logic_vector (14 downto 0); 
-   				data_in  	: in std_logic_vector(7 downto 0);
-				data_out 	: out std_logic_vector(7 downto 0);
-		
-				SCK	 				: out std_logic;
-				MOSI     	: out std_logic_vector(3 downto 0);	
-				MISO     	: in  std_logic_vector(3 downto 0); 
-				CS       	: out std_logic;   				
-			
-   				done     	: out std_logic
-
+		high_z : out std_logic; -- When high-z is high the MOSI is disconected 
+		single : in std_logic; 
+		new_data : out std_logic; 
+		RW : in std_logic;
+		address : in std_logic_vector (14 downto 0);
+		data_in : in std_logic_vector(7 downto 0);
+		data_out : out std_logic_vector(7 downto 0);
+ 
+		SCK : out std_logic;
+		MOSI : out std_logic_vector(3 downto 0); 
+		MISO : in std_logic_vector(3 downto 0);
+		CS : out std_logic; 
+ 
+		done : out std_logic
 	);
 end sqi;
 

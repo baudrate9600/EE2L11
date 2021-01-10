@@ -6,7 +6,9 @@ entity sram_test is
 				RESET    : in std_logic; 
 				SCK 				 : out std_logic; 
 				CS 				 : out std_logic; 
-				SO 				 : inout std_logic; 
+				high_z   : out std_logic; 
+				MISO     : in std_logic_vector(3 downto 0);  
+				MOSI 			 : in std_logic_vector(3 downto 0);
 				data_out : out std_logic_vector(7 downto 0));
 end sram_test;
 

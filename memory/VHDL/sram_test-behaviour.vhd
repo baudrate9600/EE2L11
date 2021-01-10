@@ -8,20 +8,25 @@ component line_buffer is
         data_out : out std_logic_vector(7 downto 0);
         write    : in  std_logic);
 	end component;
-	component sram_interface is
-	port(CLK    : in  std_logic;
-				RESET  : in  std_logic; 
-				EN			 : in  std_logic; 
-				RW			 : in  std_logic; 
-				SINGLE : in  std_logic; 
-				DATA_IN : in std_logic_vector(7 downto 0);  
-				DATA_OUT : out std_logic_vector(7 downto 0 );
-				ADDRESS	: in std_logic_vector(14 downto 0); 
-				done   : out std_logic; 
-				new_data : out std_logic; 
-        SCK    : out std_logic;
-        CS     : out std_logic;
-				SO			 : INOUT std_logic_vector(3 downto 0));
+	component sqi is
+   port(reset    	: in std_logic;
+        clk      	: in std_logic;
+        en       	: in  std_logic;
+				high_z				: out std_logic; -- When high-z is high the MOSI is disconected			
+				single				: in std_logic;	
+				new_data  : out std_logic;			
+				RW	 				: in std_logic;
+				address  	: in std_logic_vector (14 downto 0); 
+   				data_in  	: in std_logic_vector(7 downto 0);
+				data_out 	: out std_logic_vector(7 downto 0);
+		
+				SCK	 				: out std_logic;
+				MOSI     	: out std_logic_vector(3 downto 0);	
+				MISO     	: in  std_logic_vector(3 downto 0); 
+				CS       	: out std_logic;   				
+				
+   				done     	: out std_logic
+	);
 	end component;
 	component gen25mhz is
    port(clk50mhz : in  std_logic;
@@ -47,7 +52,7 @@ begin
 
 	--u0:line_buffer port map(i_address, i_data_in, data_out, i_write);
 	u1 : gen25mhz port map(CLK,i_CLK);
-	u0 : sram_interface port map(
+	u2 : sqi port map(
 			CLK => i_CLK,
 			RESET => RESET, 
 			EN			=> i_EN,
@@ -60,7 +65,9 @@ begin
 			new_data => i_new_data, 
 			SCK				 => SCK, 
 			CS 				 => CS, 
-			SO				 => SO );
+			MISO				 => MISO,
+			MOSI				 => MOSI ,
+			high_z   => high_z);
 	
 	PROCESS (i_clk, new_state)
 	BEGIN
@@ -81,7 +88,10 @@ begin
 		I_RW <= '0'; 
 		I_single <= '0'; 
 		i_address <= (others => '0');
-
+		i_address(3 downto 0) <= x"1"; 
+		i_address(7 downto 4) <= x"2"; 
+		i_address(11 downto 8) <= x"3";
+		i_address(14 downto 12) <= "100"; 
 		case state is 
 			when S0 =>
 				I_EN <= '0'; 
@@ -92,7 +102,7 @@ begin
 				end if; 
 			when S1 => 
 					I_EN<='1';
-					i_data_in <= x"01";
+					i_data_in <= x"F1";
 					if(i_done = '0') then 
 						new_state <= S2;
 					else 
@@ -100,7 +110,7 @@ begin
 					end if; 
 			when S2 =>  
 					I_EN <= '0'; 
-					i_data_in <= x"01";
+					i_data_in <= x"F1";
 					if(i_done = '1') then 
 							new_state <= S3; 
 					else 
@@ -108,7 +118,7 @@ begin
 					end if; 
 			when S3 => 
 					I_EN<='1';
-					i_data_in <= x"02";
+					i_data_in <= x"92";
 					i_address(0) <= '1'; 
 						if(i_done = '0') then 
 						new_state <= S4;
@@ -117,7 +127,7 @@ begin
 					end if; 
 			when S4 =>
 					I_EN<='0';
-					i_data_in <= x"02";
+					i_data_in <= x"92";
 					i_address(0) <= '1'; 
 					if(i_done = '1') then 
 							new_state <= S5; 
@@ -126,7 +136,7 @@ begin
 					end if; 
 			when S5 =>
 					I_EN<='1';
-					i_data_in <= x"03";
+					i_data_in <= x"53";
 					i_address(1) <= '1'; 
 					if(i_done = '0') then 
 							new_state <= S6; 
@@ -135,7 +145,7 @@ begin
 					end if; 
 			when S6 =>
 					i_address(1) <= '1';
-					i_data_in <= x"03";
+					i_data_in <= x"53";
 					i_address(1) <= '1';
 					I_EN <= '0'; 
 					if(i_done = '1') then 
@@ -178,6 +188,7 @@ begin
 						I_RW <= '1'; 
 						i_single <= '1';
 						i_en <= '0'; 
+						new_state <= S11;
 		end case;
 	end process; 
 					

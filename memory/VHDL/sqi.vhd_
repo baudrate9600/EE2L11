@@ -6,6 +6,7 @@ entity sqi is
    port(reset    	: in std_logic;
         clk      	: in std_logic;
         en       	: in  std_logic;
+
 				high_z				: out std_logic; -- When high-z is high the MOSI is disconected			
 				single				: in std_logic;	
 				new_data  : out std_logic;			
@@ -17,12 +18,10 @@ entity sqi is
 				SCK	 				: out std_logic;
 				MOSI     	: out std_logic_vector(3 downto 0);	
 				MISO     	: in  std_logic_vector(3 downto 0); 
-				CS       	: out std_logic;
-
-					
-   				
+				CS       	: out std_logic;   				
 			
    				done     	: out std_logic
+
 	);
 end sqi;
 
