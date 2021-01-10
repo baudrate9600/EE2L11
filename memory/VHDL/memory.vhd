@@ -15,8 +15,8 @@ entity memory is
         calc_buf_out : out std_logic_vector(23 downto 0);
 	framebuffer_buf : out std_logic_vector(157 downto 0);
         ready        : out std_logic;
-	cs	     : out std_logic;
-	en	     : out std_logic;
+	single	     : out std_logic;
+	sqi_rw	     : out std_logic;
    	-- TEMPORARY FOR TESTING
    	sqi_finished : in std_logic;
    	sqi_data_in  : in std_logic_vector(7 downto 0);
