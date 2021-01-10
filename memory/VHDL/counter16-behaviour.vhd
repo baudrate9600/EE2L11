@@ -1,23 +1,23 @@
-LIBRARY IEEE;
-USE IEEE.std_logic_1164.ALL;
-USE IEEE.numeric_std.ALL;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
-ARCHITECTURE behaviour OF counter16 IS
-	SIGNAL count : unsigned(3 DOWNTO 0);
-BEGIN
-	PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
-			IF reset = '1' THEN
+architecture behaviour of counter16 is
+	signal count : unsigned(3 downto 0);
+begin
+	process (clk)
+	begin
+		if rising_edge(clk) then
+			if reset = '1' then
 				count <= "0000";
-			ELSE
-				IF (load = '1') THEN
+			else
+				if (load = '1') then
 					count <= unsigned(count_in);
-				ELSIF (enable = '1') THEN
+				elsif (enable = '1') then
 					count <= count + 1;
-				END IF;
-			END IF;
-		END IF;
-	END PROCESS;
+				end if;
+			end if;
+		end if;
+	end process;
 	count_out <= std_logic_vector(count);
-END behaviour;
+end behaviour;
