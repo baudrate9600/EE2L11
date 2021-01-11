@@ -14,7 +14,8 @@ architecture behaviour of memory_tb is
 	   grid		: in  std_logic;
            calc_buf_in  : in  std_logic_vector(5 downto 0);
            calc_buf_out : out std_logic_vector(23 downto 0);
-      	framebuffer_buf     : out std_logic_vector(157 downto 0);
+	   framebuffer_buf     : out std_logic_vector(157 downto 0);
+	   sqi_address  : out std_logic_vector(14 downto 0);
            ready        : out std_logic;
 	single	        : out std_logic;
 	sqi_rw		: out std_logic;
@@ -34,6 +35,7 @@ architecture behaviour of memory_tb is
    signal calc_buf_in  : std_logic_vector(5 downto 0);
    signal calc_buf_out : std_logic_vector(23 downto 0);
    signal framebuffer_buf     :  std_logic_vector(157 downto 0);
+   signal sqi_address  : std_logic_vector(14 downto 0);
    signal ready        : std_logic;
    signal single       : std_logic;
    signal sqi_rw       : std_logic;
@@ -41,7 +43,7 @@ architecture behaviour of memory_tb is
    signal sqi_data_in  : std_logic_vector(7 downto 0);
    signal sqi_data_out : std_logic_vector(7 downto 0);
 begin
-   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, grid, calc_buf_in, calc_buf_out, framebuffer_buf, ready, single, sqi_rw, sqi_finished, sqi_data_in,
+   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, grid, calc_buf_in, calc_buf_out, framebuffer_buf, sqi_address, ready, single, sqi_rw, sqi_finished, sqi_data_in,
 	sqi_data_out);
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;

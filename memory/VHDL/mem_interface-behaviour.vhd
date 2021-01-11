@@ -15,6 +15,7 @@ component memory is
         calc_buf_in  : in  std_logic_vector(5 downto 0);
         calc_buf_out : out std_logic_vector(23 downto 0);
 	framebuffer_buf : out std_logic_vector(157 downto 0);
+	sqi_address  : out std_logic_vector(14 downto 0);
         ready        : out std_logic;
 	cs	     : out std_logic;
 	en	     : out std_logic;
@@ -50,6 +51,6 @@ signal i_single, i_new_data,i_data_in, i_data_out, i_done : std_logic;
 signal i_address 
 begin 
 	u0: sqi port map (reset, clk, en, high_z, i_single, i_new_data, i_rw,i_address, i_data_in, i_data_out, sck, mosi, miso, cs,i_done); 
-	u1: memory port map(clk, reset, data_in, x,y,rw,ce,mode,grid,calc_buf_in, calc_buf_out,framebuffer_buf,ready,cs_1,en_1,i_done, i_data_in, i_data_out); 
+	u1: memory port map(clk, reset, data_in, x,y,rw,ce,mode,grid,calc_buf_in, calc_buf_out,framebuffer_buf,sqi_address,ready,cs_1,en_1,i_done, i_data_in, i_data_out); 
 end behaviour;
 
