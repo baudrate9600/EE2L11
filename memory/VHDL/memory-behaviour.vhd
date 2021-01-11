@@ -47,6 +47,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				new_counter <= to_unsigned(0, counter'length);
 				ready <= '1';
 				sqi_enabled <= '0';
+				single <= '0';
+				sqi_rw <= '0';
 				sqi_data_out <= (others => '0');
 				if (reset = '1') then
 					new_state <= RESET_STATE;
@@ -56,6 +58,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 			when IDLE =>
 				ready <= '1';
 				sqi_enabled <= '0';
+				single <= '0';
+				sqi_rw <= '0';
 				new_calc_buf_out <= calc_buf_out;
 				new_framebuffer_buf <= framebuffer_buf;
 				new_row_buf <= row_buf;
@@ -77,6 +81,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 			when READING =>
 				ready <= '0';
 				sqi_enabled <= '1';
+				single <= '0';
+				sqi_rw <= '1';
 				new_framebuffer_buf <= framebuffer_buf;
 				new_row_buf <= row_buf;
 				sqi_data_out <= (others => '0');
@@ -106,6 +112,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 			when WRITING_0 =>
 				ready <= '0';
 				sqi_enabled <= '1';
+				single <= '1';
+				sqi_rw <= '0';
 				new_calc_buf_out <= calc_buf_out;
 				new_framebuffer_buf <= framebuffer_buf;
 				new_row_buf <= row_buf;
@@ -139,6 +147,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 			when READING_FRAMEBUFFER =>
 				ready <= '0';
 				sqi_enabled <= '1';
+				single <= '0';
+				sqi_rw <= '1';
 				new_calc_buf_out <= calc_buf_out;
 				sqi_data_out <= (others => '0');
 				new_row_buf <= row_buf;
@@ -287,6 +297,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 					end if;
 
 					sqi_enabled <= '1';
+					single <= '0';
+					sqi_rw <= '1';
 					new_state <=  READING;
 				else
 					new_calc_buf_out <= calc_buf_out;
@@ -326,6 +338,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				new_calc_buf_out <= calc_buf_out;
 				ready <= '0';
 				sqi_enabled <= '1';
+				single <= '1';
+				sqi_rw <= '1';
 				new_framebuffer_buf <= framebuffer_buf;
 				if (sqi_finished = '1') then
 					new_row_buf <= sqi_data_in(5 downto 0);
@@ -353,6 +367,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 			when WRITING_1 =>
 				ready <= '0';
 				sqi_enabled <= '1';
+				single <= '1';
+				sqi_rw <= '0';
 				new_calc_buf_out <= calc_buf_out;
 				new_framebuffer_buf <= framebuffer_buf;
 				new_row_buf <= row_buf;
@@ -383,6 +399,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 			when WRITING_2 =>
 				ready <= '0';
 				sqi_enabled <= '1';
+				single <= '1';
+				sqi_rw <= '0';
 				new_calc_buf_out <= calc_buf_out;
 				new_framebuffer_buf <= framebuffer_buf;
 				new_row_buf <= row_buf;
