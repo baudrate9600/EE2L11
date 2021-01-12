@@ -82,7 +82,7 @@ begin
 	port map(
 		clk => clk, 
 		reset => reset, 
-		data_in => "00000000";
+		data_in => "00000000",
 		x => x, 
 		y => y, 
 		rw => rw, 

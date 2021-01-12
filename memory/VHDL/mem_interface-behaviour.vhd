@@ -54,7 +54,7 @@ architecture behaviour of mem_interface is
 	--joining signals
  
 	signal i_single, i_done, i_new_data, i_rw : std_logic;
-	signal i_data_in, i_data_out : std_logic_vector(7 downto 0);
+	signal i_sqi_data_in, i_sqi_data_out : std_logic_vector(7 downto 0);
 	signal i_address : std_logic_vector(14 downto 0); 
 	signal done_or_new_signal : std_logic; 
 	signal i_sqi_enable : std_logic;
@@ -70,8 +70,8 @@ begin
 		new_data => i_new_data, 
 		rw => i_rw, 
 		address => i_address, 
-		data_in => i_data_in, 
-		data_out => i_data_out, 
+		data_in => i_sqi_data_in, 
+		data_out => i_sqi_data_out, 
 		sck => sck, 
 		mosi => mosi, 
 		miso => miso, 
@@ -99,8 +99,8 @@ begin
 		single => i_single, 
 		sqi_rw => i_rw, 
 		sqi_finished => done_or_new_signal, 
-		sqi_data_in => i_data_in, 
-		sqi_data_out => i_data_out, 
+		sqi_data_in => i_sqi_data_out, 
+		sqi_data_out => i_sqi_data_in, 
 		sqi_enabled => i_sqi_enable); 
 end behaviour;
 
