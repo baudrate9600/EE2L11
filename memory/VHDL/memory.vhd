@@ -10,8 +10,10 @@ entity memory is
         rw           : in  std_logic;
         ce           : in  std_logic;
         mode  	     : in  std_logic;
+	edit	     : in  std_logic;
 	grid	     : in  std_logic;
         calc_buf_in  : in  std_logic_vector(5 downto 0);
+	edit_buf_in  : in  std_logic_vector(7 downto 0);
         calc_buf_out : out std_logic_vector(23 downto 0);
 	framebuffer_buf : out std_logic_vector(157 downto 0);
 	sqi_address  : out std_logic_vector(14 downto 0);

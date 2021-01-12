@@ -11,8 +11,10 @@ architecture behaviour of memory_tb is
            rw           : in  std_logic;
            ce           : in  std_logic;
            mode  	     : in  std_logic;
+	   edit		: in  std_logic;
 	   grid		: in  std_logic;
            calc_buf_in  : in  std_logic_vector(5 downto 0);
+	   edit_buf_in  : in std_logic_vector(7 downto 0);
            calc_buf_out : out std_logic_vector(23 downto 0);
 	   framebuffer_buf     : out std_logic_vector(157 downto 0);
 	   sqi_address  : out std_logic_vector(14 downto 0);
@@ -31,8 +33,10 @@ architecture behaviour of memory_tb is
    signal rw           : std_logic;
    signal ce           : std_logic;
    signal mode  	     : std_logic;
+   signal edit	       : std_logic;
    signal grid	       : std_logic;
    signal calc_buf_in  : std_logic_vector(5 downto 0);
+   signal edit_buf_in  : std_logic_vector(7 downto 0);
    signal calc_buf_out : std_logic_vector(23 downto 0);
    signal framebuffer_buf     :  std_logic_vector(157 downto 0);
    signal sqi_address  : std_logic_vector(14 downto 0);
@@ -43,7 +47,7 @@ architecture behaviour of memory_tb is
    signal sqi_data_in  : std_logic_vector(7 downto 0);
    signal sqi_data_out : std_logic_vector(7 downto 0);
 begin
-   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, grid, calc_buf_in, calc_buf_out, framebuffer_buf, sqi_address, ready, single, sqi_rw, sqi_finished, sqi_data_in,
+   test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, edit, grid, calc_buf_in, edit_buf_in, calc_buf_out, framebuffer_buf, sqi_address, ready, single, sqi_rw, sqi_finished, sqi_data_in,
 	sqi_data_out);
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
@@ -73,8 +77,10 @@ begin
    mode <= '0' after 0 ns,
 	   '1' after 1000 ns,
 	   '0' after 2800 ns;
+   edit <= '0' after 0 ns;
 
    calc_buf_in <= (others => '0') after 0 ns;
+   edit_buf_in <= (others => '0') after 0 ns;
 
    sqi_finished <= '0' after 0 ns,
 		   '1' after 160 ns,
