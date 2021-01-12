@@ -26,7 +26,7 @@ entity mem_interface is
 		sck      	: out std_logic;
 		mosi     	: out std_logic_vector(3 downto 0);
 		miso     	: in  std_logic_vector(3 downto 0);
-		cs       	: out std_logic;
+		cs       	: out std_logic
 	
 	);
 end mem_interface;
