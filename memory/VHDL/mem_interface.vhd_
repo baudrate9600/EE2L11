@@ -5,7 +5,7 @@ entity mem_interface is
 	port (
 		reset    	: in  std_logic;
 		clk      	: in  std_logic;
-		en       	: in  std_logic;
+	
 		
 		done     	: out std_logic;
 		data_in      	: in  std_logic_vector(7 downto 0);
