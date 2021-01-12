@@ -193,6 +193,8 @@ begin
 					data_out <= address(3 downto 0) & address(7 downto 4);
 				elsif (count_in = x"6"OR count_in = x"7") then
 					data_out <= data_in(3 downto 0) & data_in(7 downto 4);
+				else 
+					data_out <= (others => '0');
 				end if;
 				--load first then shift 
 				if (SHIFT_nLOAD = '1') then

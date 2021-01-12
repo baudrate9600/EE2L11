@@ -88,10 +88,11 @@ begin
 		I_RW <= '0'; 
 		I_single <= '0'; 
 		i_address <= (others => '0');
-		i_address(3 downto 0) <= x"1"; 
-		i_address(7 downto 4) <= x"2"; 
-		i_address(11 downto 8) <= x"3";
-		i_address(14 downto 12) <= "100"; 
+		i_address(14) <= '1';
+		--i_address(3 downto 0) <= x"1"; 
+		--i_address(7 downto 4) <= x"2"; 
+		----i_address(11 downto 8) <= x"3";
+		--i_address(14 downto 12) <= "100"; 
 		case state is 
 			when S0 =>
 				I_EN <= '0'; 
@@ -102,7 +103,7 @@ begin
 				end if; 
 			when S1 => 
 					I_EN<='1';
-					i_data_in <= x"F1";
+					i_data_in <= x"10";
 					if(i_done = '0') then 
 						new_state <= S2;
 					else 
@@ -110,7 +111,7 @@ begin
 					end if; 
 			when S2 =>  
 					I_EN <= '0'; 
-					i_data_in <= x"F1";
+					i_data_in <= x"10";
 					if(i_done = '1') then 
 							new_state <= S3; 
 					else 
@@ -118,7 +119,7 @@ begin
 					end if; 
 			when S3 => 
 					I_EN<='1';
-					i_data_in <= x"92";
+					i_data_in <= x"02";
 					i_address(0) <= '1'; 
 						if(i_done = '0') then 
 						new_state <= S4;
@@ -127,7 +128,7 @@ begin
 					end if; 
 			when S4 =>
 					I_EN<='0';
-					i_data_in <= x"92";
+					i_data_in <= x"02";
 					i_address(0) <= '1'; 
 					if(i_done = '1') then 
 							new_state <= S5; 
@@ -136,7 +137,7 @@ begin
 					end if; 
 			when S5 =>
 					I_EN<='1';
-					i_data_in <= x"53";
+					i_data_in <= x"30";
 					i_address(1) <= '1'; 
 					if(i_done = '0') then 
 							new_state <= S6; 
@@ -145,7 +146,7 @@ begin
 					end if; 
 			when S6 =>
 					i_address(1) <= '1';
-					i_data_in <= x"53";
+					i_data_in <= x"30";
 					i_address(1) <= '1';
 					I_EN <= '0'; 
 					if(i_done = '1') then 

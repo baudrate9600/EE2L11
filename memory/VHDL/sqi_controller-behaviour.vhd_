@@ -253,11 +253,7 @@ elsif falling_edge(clk) then
 end if;
 end process;
 
---SQI
---SCK_CS_EN <= '1' when ((state = START OR state = LOAD_buffer OR state = PAUSE) or reset = '1') ELSE '0';
- 
---SCK <= '0' WHEN SCK_CS_EN ELSE not CLK;
---CS <= '1' WHEN SCK_CS_EN ELSE '0';
+--Create the inverted clock for the shift register
 
 shift_clk <= clk when toggle_clk = '0' else
              not(clk);
