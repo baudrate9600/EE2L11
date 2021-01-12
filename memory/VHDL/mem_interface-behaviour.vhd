@@ -19,12 +19,11 @@ component memory is
 	framebuffer_buf : out std_logic_vector(157 downto 0);
 	sqi_address  : out std_logic_vector(14 downto 0);
         ready        : out std_logic;
-	cs	     : out std_logic;
-	en	     : out std_logic;
    	-- TEMPORARY FOR TESTING
    	sqi_finished : in std_logic;
    	sqi_data_in  : in std_logic_vector(7 downto 0);
-	sqi_data_out : out std_logic_vector(7 downto 0));
+	sqi_data_out : out std_logic_vector(7 downto 0);
+	sqi_enabled  : out std_logic);
 end component;
 
 component sqi is
@@ -49,10 +48,10 @@ component sqi is
 		done     : out std_logic
 	);
 end component;
-signal i_single, i_new_data,i_data_in, i_data_out, i_done : std_logic; 
+signal i_single, i_new_data,i_data_in, i_data_out, i_done, i_en : std_logic; 
 signal i_address 
 begin 
-	u0: sqi port map (reset, clk, en, high_z, i_single, i_new_data, i_rw,i_address, i_data_in, i_data_out, sck, mosi, miso, cs,i_done); 
-	u1: memory port map(clk, reset, data_in, x,y,rw,ce,mode,edit,grid,calc_buf_in, edit_buf_in,calc_buf_out,framebuffer_buf,sqi_address,ready,cs_1,en_1,i_done, i_data_in, i_data_out); 
+	u0: sqi port map (reset, clk, i_en, high_z, i_single, i_new_data, i_rw,i_address, i_data_in, i_data_out, sck, mosi, miso, cs,i_done); 
+	u1: memory port map(clk, reset, data_in, x,y,rw,ce,mode,edit,grid,calc_buf_in, edit_buf_in,calc_buf_out,framebuffer_buf,sqi_address,ready,cs_1,en_1,i_done, i_data_in, i_data_out, i_en);
 end behaviour;
 
