@@ -20,9 +20,9 @@ entity memory is
         ready        : out std_logic;
 	single	     : out std_logic;
 	sqi_rw	     : out std_logic;
-   	-- TEMPORARY FOR TESTING
    	sqi_finished : in std_logic;
    	sqi_data_in  : in std_logic_vector(7 downto 0);
-	sqi_data_out : out std_logic_vector(7 downto 0));
+	sqi_data_out : out std_logic_vector(7 downto 0);
+	sqi_enabled  : out std_logic);
 end memory;
 

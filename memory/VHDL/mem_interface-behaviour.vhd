@@ -20,12 +20,12 @@ component memory is
 	framebuffer_buf : out std_logic_vector(157 downto 0);
 	sqi_address  : out std_logic_vector(14 downto 0);
         ready        : out std_logic;
-	single	     : out std_logic;
-	sqi_rw	     : out std_logic;
+
    	-- TEMPORARY FOR TESTING
    	sqi_finished : in std_logic;
    	sqi_data_in  : in std_logic_vector(7 downto 0);
-	sqi_data_out : out std_logic_vector(7 downto 0));
+	sqi_data_out : out std_logic_vector(7 downto 0);
+	sqi_enabled  : out std_logic);
 end component;
 
 component sqi is
@@ -51,6 +51,7 @@ component sqi is
 	);
 
 end component;
+
 
 --joining signals 
 		
@@ -96,5 +97,7 @@ begin
 											sqi_finished => done_or_new_signal,
 											sqi_data_in => i_data_in,
 											sqi_data_out => i_data_out); 	
+
+
 end behaviour;
 

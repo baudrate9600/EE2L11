@@ -3,7 +3,6 @@ use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
 architecture behaviour of memory is
-signal sqi_enabled : std_logic;
 signal counter, new_counter : unsigned(7 downto 0);
 
 type memory_state is (READING, WRITING_0, WRITING_1, WRITING_2, READ_FRAMEBUFFER, READING_FRAMEBUFFER, READ_ROW, WRITE_ROW_1,

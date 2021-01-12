@@ -23,7 +23,8 @@ architecture behaviour of memory_tb is
 	sqi_rw		: out std_logic;
       	sqi_finished : in std_logic;
       	sqi_data_in  : in std_logic_vector(7 downto 0);
-	sqi_data_out : out std_logic_vector(7 downto 0));
+	sqi_data_out : out std_logic_vector(7 downto 0);
+	sqi_enabled  : out std_logic);
    end component;
    signal clk          : std_logic;
    signal reset	     : std_logic;
@@ -46,9 +47,10 @@ architecture behaviour of memory_tb is
    signal sqi_finished : std_logic;
    signal sqi_data_in  : std_logic_vector(7 downto 0);
    signal sqi_data_out : std_logic_vector(7 downto 0);
+   signal sqi_enabled  : std_logic;
 begin
    test: memory port map (clk, reset, data_in, x, y, rw, ce, mode, edit, grid, calc_buf_in, edit_buf_in, calc_buf_out, framebuffer_buf, sqi_address, ready, single, sqi_rw, sqi_finished, sqi_data_in,
-	sqi_data_out);
+	sqi_data_out, sqi_enabled);
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
    reset <= '1' after 0 ns,
