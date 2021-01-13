@@ -225,6 +225,7 @@ begin
 					new_data <= '1';
 				end if;
 			when LOAD_BUFFER => 
+				new_data <= '1';
 				high_z <= '1';
 			when others => 
 		end case;

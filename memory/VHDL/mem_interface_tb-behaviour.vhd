@@ -67,9 +67,9 @@ begin
    y(5) <= '0' after 0 ns;
    y(6) <= '0' after 0 ns;
    y(7) <= '0' after 0 ns;
-   rw <= '1' after 0 ns;
+   rw <= '1' after 0 ns, '0' after 3000 ns;
    ce <= '0' after 0 ns, '1' after 10 ns;
-   mode <= '0' after 0 ns;
+   mode <= '1' after 0 ns;
    edit <= '0' after 0 ns;
    grid <= '0' after 0 ns;
    calc_buf_in(0) <= '0' after 0 ns;

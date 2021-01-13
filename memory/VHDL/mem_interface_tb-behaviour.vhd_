@@ -67,7 +67,7 @@ begin
    y(5) <= '0' after 0 ns;
    y(6) <= '0' after 0 ns;
    y(7) <= '0' after 0 ns;
-   rw <= '1' after 0 ns;
+   rw <= '1' after 0 ns, '0' after 3000 ns;
    ce <= '0' after 0 ns, '1' after 10 ns;
    mode <= '0' after 0 ns;
    edit <= '0' after 0 ns;
@@ -86,8 +86,8 @@ begin
    edit_buf_in(5) <= '0' after 0 ns;
    edit_buf_in(6) <= '0' after 0 ns;
    edit_buf_in(7) <= '0' after 0 ns;
-   miso(0) <= '0' after 0 ns;
-   miso(1) <= '0' after 0 ns;
+   miso(0) <= '1' after 0 ns;
+   miso(1) <= '1' after 0 ns;
    miso(2) <= '0' after 0 ns;
    miso(3) <= '0' after 0 ns;
 

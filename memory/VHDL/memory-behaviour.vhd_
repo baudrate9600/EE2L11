@@ -12,6 +12,9 @@ signal new_calc_buf_out : std_logic_vector(23 downto 0);
 signal row_buf, new_row_buf : std_logic_vector(5 downto 0);
 signal new_framebuffer_buf : std_logic_vector(157 downto 0);
 signal new_sqi_address : std_logic_vector(14 downto 0);
+signal state_latch : memory_state; 
+signal dff_command, new_dff_command : std_logic_vector(1 downto 0); --This remebers the input given to the system, so that in waiting state it knows to
+																										--which state it should go. 
 begin
 	-- New state  generation
 	process (clk)
@@ -31,6 +34,7 @@ begin
 				counter <= new_counter;
 				sqi_address <= new_sqi_address;
 				state <= new_state;
+				dff_command <= new_dff_command; 
 			end if;
 		end if;
 	end process;
@@ -40,6 +44,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 	variable row : unsigned(7 downto 0);
 	variable column : unsigned(4 downto 0);
 	begin
+				new_dff_command <= dff_command;
 		case state is
 			when RESET_STATE =>
 				new_calc_buf_out <= (others => '0');
@@ -57,6 +62,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				else
 					new_state <= IDLE;
 				end if;
+				new_dff_command <= "00"; 
 			when IDLE =>
 				ready <= '1';
 				sqi_enabled <= '0';
@@ -67,25 +73,39 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				new_row_buf <= row_buf;
 				sqi_data_out <= (others => '0');
 				new_sqi_address <= (others => '0');
+				new_dff_command <= rw & mode;
 				if (ce = '1') then
+					new_state <= waiting;
+					sqi_enabled <= '1';
 					new_counter <= to_unsigned(0, counter'length);
 					if (rw = '1') then
-						if (mode = '0') then
-							new_state <= WAITING;
-						else
-							new_state <= READ_FRAMEBUFFER;
+						sqi_rw <= '1';	
+						if(mode = '0') then 
+							single <= '0'; 
+						else 
+							single <= '1';
 						end if;
 					else
-						new_state <= WRITE_ROW_1;
+						sqi_rw <= '0';
 					end if;
+					
 				else
 					new_state <= IDLE;
 				end if;	
 			when WAITING =>
-				sqi_enabled <= '1';
-				sqi_rw <= '1';
 				if(sqi_finished = '0') then 
-					new_state <= READING; 
+					if (dff_command(1) = '1') then
+							sqi_rw <= '1';	
+							if (dff_command(0) = '0') then
+								new_state <= READING;
+							else
+								new_state <= READ_framebuffer;
+							end if;
+					else
+							sqi_rw <= '0';
+							new_state <= WRITE_ROW_1;
+					end if;
+				
 				else 
 					new_state <= WAITING; 
 				end if; 
