@@ -6,7 +6,7 @@ architecture behaviour of memory is
 signal counter, new_counter : unsigned(7 downto 0);
 
 type memory_state is (READING,WAITING, WRITING_0, WRITING_1, WRITING_2, READ_FRAMEBUFFER, READING_FRAMEBUFFER, READ_ROW, WRITE_ROW_1,
-	WRITE_ROW_2, WRITE_ROW_3, FETCH_PREVIOUS_ROW, IDLE, RESET_STATE);
+	WRITE_ROW_2, WRITE_ROW_3, FETCH_PREVIOUS_ROW,FETCHING, IDLE, RESET_STATE);
 signal state, new_state : memory_state;
 signal new_calc_buf_out : std_logic_vector(23 downto 0);
 signal row_buf, new_row_buf : std_logic_vector(5 downto 0);
@@ -93,6 +93,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 					new_state <= IDLE;
 				end if;	
 			when WAITING =>
+				sqi_enabled <= '1'; 
 				if(sqi_finished = '0') then 
 					if (dff_command(1) = '1') then
 							sqi_rw <= '1';	
@@ -143,7 +144,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				end if;
 			when WRITING_0 =>
 				ready <= '0';
-				sqi_enabled <= '1';
+				sqi_enabled <= '0';
 				single <= '1';
 				sqi_rw <= '0';
 				new_calc_buf_out <= calc_buf_out;
@@ -166,6 +167,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 
 			when READ_FRAMEBUFFER =>
 				ready <= '0';
+				single <= '1';
 				sqi_enabled <= '0';
 				row := unsigned(y);
 				new_calc_buf_out <= calc_buf_out;
@@ -181,13 +183,18 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 					new_counter <= counter;
 					new_state <= READING_FRAMEBUFFER;
 				else
+					--finish last write to the framebuffer
 					new_sqi_address <= sqi_address;
-					new_state <= IDLE;
+					if(sqi_finished = '1') then
+							new_state <= idle;
+					else 
+							new_state <= READ_FRAMEBUFFER; 
+					end if; 
 				end if;
 			when READING_FRAMEBUFFER =>
 				ready <= '0';
-				sqi_enabled <= '1';
-				single <= '0';
+				sqi_enabled <= '0';
+				single <= '1';
 				sqi_rw <= '1';
 				new_calc_buf_out <= calc_buf_out;
 				sqi_data_out <= (others => '0');
@@ -299,7 +306,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 						new_framebuffer_buf <= framebuffer_buf;
 					end if;
 					new_counter <= counter + 1;
-					new_state <= READ_FRAMEBUFFER;
+					new_state <= waiting;
 				else
 					new_framebuffer_buf <= framebuffer_buf;
 					new_state <= READING_FRAMEBUFFER;
@@ -386,6 +393,10 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 						new_state <= FETCH_PREVIOUS_ROW;
 					end if;
 				end if;
+				--Overrule 
+				if(sqi_finished = '0') then
+					new_state <= WRITE_ROW_1;
+				end if;  
 			when FETCH_PREVIOUS_ROW =>
 				new_calc_buf_out <= calc_buf_out;
 				ready <= '0';
@@ -394,17 +405,31 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				sqi_rw <= '1';
 				new_framebuffer_buf <= framebuffer_buf;
 				new_sqi_address <= sqi_address;
+				if (sqi_finished = '0') then
+					new_row_buf <= sqi_data_in(5 downto 0);
+					new_state <= FETCHING;
+				else
+					new_state <= FETCH_PREVIOUS_ROW;
+				end if;
+			when FETCHING =>
+				new_calc_buf_out <= calc_buf_out;
+				ready <= '0';
+				sqi_enabled <= '0';
+				single <= '1';
+				sqi_rw <= '1';
+				new_framebuffer_buf <= framebuffer_buf;
+				new_sqi_address <= sqi_address;
 				if (sqi_finished = '1') then
 					new_row_buf <= sqi_data_in(5 downto 0);
 					new_state <= WRITE_ROW_2;
 				else
-					new_state <= FETCH_PREVIOUS_ROW;
+					new_state <= FETCHING;
 				end if;
 			when WRITE_ROW_2 =>
 				-- Now we have the previous row buffered and we can start wriring the rows
 				-- First write the previous row
 				ready <= '0';
-				sqi_enabled <= '0';
+				sqi_enabled <= '1';
 				row := unsigned(y);
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
@@ -417,10 +442,15 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				end if;
 				sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
 				sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
+				if(sqi_finished = '0') then 
 				new_state <= WRITING_1;
+				else 
+				new_state <= write_row_2;
+				end if; 
+				single <= '1';  
 			when WRITING_1 =>
 				ready <= '0';
-				sqi_enabled <= '1';
+				sqi_enabled <= '0';
 				single <= '1';
 				sqi_rw <= '0';
 				new_calc_buf_out <= calc_buf_out;
@@ -437,7 +467,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 			when WRITE_ROW_3 =>
 				-- Now we write the actual row we are currently on
 				ready <= '0';
-				sqi_enabled <= '0';
+				sqi_enabled <= '1';
 				row := unsigned(y);
 				column := unsigned(x);
 				new_calc_buf_out <= calc_buf_out;
@@ -452,6 +482,10 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				sqi_data_out(0) <= '0';
 				sqi_data_out(7) <= '0';
 				new_state <= WRITING_2;
+				--Overrule 
+				if(sqi_finished = '0') then
+					new_state <= WRITE_ROW_3;
+				end if; 
 			when WRITING_2 =>
 				ready <= '0';
 				sqi_enabled <= '1';
