@@ -215,12 +215,17 @@ begin
 				end if;
 				if (count_in = x"7") then
 					data_out <= "00000000"; --dummy byte
+				elsif (count_in = x"c") then 
+					new_data <= '1'; 
 				elsif (count_in = x"D") then
+					new_data <= '1';
+				elsif (count_in = x"E") then 
 					new_data <= '1';
 				elsif (count_in = x"F") then
 					new_data <= '1';
 				end if;
 			when LOAD_BUFFER => 
+				new_data <= '1';
 				high_z <= '1';
 			when others => 
 		end case;

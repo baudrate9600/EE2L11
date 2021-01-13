@@ -28,13 +28,13 @@ begin
 	end if;
 end process;
 
-process (SINGLE, SINGLE_LATCH_ENABLE) begin
-if (SINGLE_LATCH_ENABLE = '1') then
-	SINGLE_LATCH <= SINGLE;
-else
-	SINGLE_LATCH <= SINGLE_LATCH;
-end if;
-end process;
+	process (SINGLE, SINGLE_LATCH_ENABLE) begin
+		if (SINGLE_LATCH_ENABLE = '1') then
+			SINGLE_LATCH <= SINGLE;
+		else
+			SINGLE_LATCH <= SINGLE_LATCH;
+		end if;
+	end process;
  
 --New state generation
 process (clk, new_state)
@@ -193,6 +193,8 @@ begin
 					data_out <= address(3 downto 0) & address(7 downto 4);
 				elsif (count_in = x"6"OR count_in = x"7") then
 					data_out <= data_in(3 downto 0) & data_in(7 downto 4);
+				else 
+					data_out <= (others => '0');
 				end if;
 				--load first then shift 
 				if (SHIFT_nLOAD = '1') then
@@ -213,7 +215,11 @@ begin
 				end if;
 				if (count_in = x"7") then
 					data_out <= "00000000"; --dummy byte
+				elsif (count_in = x"c") then 
+					new_data <= '1'; 
 				elsif (count_in = x"D") then
+					new_data <= '1';
+				elsif (count_in = x"E") then 
 					new_data <= '1';
 				elsif (count_in = x"F") then
 					new_data <= '1';

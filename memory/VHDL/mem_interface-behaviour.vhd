@@ -58,8 +58,36 @@ architecture behaviour of mem_interface is
 	signal i_address : std_logic_vector(14 downto 0); 
 	signal done_or_new_signal : std_logic; 
 	signal i_sqi_enable : std_logic;
+	type fsm is(RES,WAKEUP);
+	signal state, new_state : fsm;
+	signal i_ce : std_logic; 
 begin
 	done_or_new_signal <= i_new_data or i_done;
+	--New state generation
+	process (clk, new_state)
+	begin
+		if rising_edge(clk) then
+			if reset = '1' then
+				state <= RES;
+			else
+				state <= new_state;
+		end if;
+	end if;
+	end process;
+	
+	process(state, reset, done_or_new_signal) begin
+		if(state = RES) then 
+				if(done_or_new_signal = '1') then 
+					new_state <= wakeup; 
+				else 
+					new_state <= RES; 
+				end if; 
+				i_ce <= '0'; 
+		else
+				i_ce <= ce;
+				new_state <= wakeup; 
+		end if; 
+	end process; 
 	u0 : sqi
 	port map(
 		reset => reset, 
@@ -86,7 +114,7 @@ begin
 		x => x, 
 		y => y, 
 		rw => rw, 
-		ce => ce, 
+		ce => i_ce, 
 		mode => mode, 
 		edit => edit, 
 		grid => grid, 
