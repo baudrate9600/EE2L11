@@ -31,7 +31,7 @@ begin
 			else
 				framebuffer_buf_mid <= new_framebuffer_buf;
 				calc_buf_mid <= new_calc_buf_out;
-				oow_buf <= new_row_buf;
+				row_buf <= new_row_buf;
 				counter <= new_counter;
 				sqi_address_mid <= new_sqi_address;
 				state <= new_state;
