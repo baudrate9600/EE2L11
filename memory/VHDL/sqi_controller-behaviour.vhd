@@ -28,13 +28,13 @@ begin
 	end if;
 end process;
 
-process (SINGLE, SINGLE_LATCH_ENABLE) begin
-if (SINGLE_LATCH_ENABLE = '1') then
-	SINGLE_LATCH <= SINGLE;
-else
-	SINGLE_LATCH <= SINGLE_LATCH;
-end if;
-end process;
+	process (SINGLE, SINGLE_LATCH_ENABLE) begin
+		if (SINGLE_LATCH_ENABLE = '1') then
+			SINGLE_LATCH <= SINGLE;
+		else
+			SINGLE_LATCH <= SINGLE_LATCH;
+		end if;
+	end process;
  
 --New state generation
 process (clk, new_state)

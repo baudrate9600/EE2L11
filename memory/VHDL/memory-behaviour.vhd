@@ -153,6 +153,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 					new_counter <= counter;
 					new_state <= READING_FRAMEBUFFER;
 				else
+					new_sqi_address <= sqi_address;
 					new_state <= IDLE;
 				end if;
 			when READING_FRAMEBUFFER =>
@@ -314,6 +315,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				else
 					new_calc_buf_out <= calc_buf_out;
 					new_state <= IDLE;
+					new_sqi_address <= sqi_address;
 				end if;
 			when WRITE_ROW_1 =>
 				-- When it's the first row we can just write in the row
