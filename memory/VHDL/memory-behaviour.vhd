@@ -383,14 +383,9 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				new_framebuffer_buf <= i_framebuffer_buf;
 				new_row_buf <= i_row_buf;
 				sqi_enabled <= '0';
-				if (edit = '1') then
-						if (grid = '0') then
-							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)), sqi_address'length));
-						else
-							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address'length));
-						end if;
-						sqi_data_out <= edit_buf_in;
-						new_state <= WRITING_0;
+				--Overrule 
+				if(sqi_finished = '0') then
+					new_state <= WRITE_ROW_1;
 				else
 					if (column = 0) then
 						if (grid = '0') then
@@ -398,9 +393,13 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 						else
 							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address'length));
 						end if;
-						sqi_data_out(6 downto 1) <= calc_buf_in;
-						sqi_data_out(0) <= '0';
-						sqi_data_out(7) <= '0';
+						if (edit = '1') then
+							sqi_data_out < edit_buf_in;
+						else
+							sqi_data_out(6 downto 1) <= calc_buf_in;
+							sqi_data_out(0) <= '0';
+							sqi_data_out(7) <= '0';
+						end if;
 						new_state <= WRITING_0;
 					else
 						if (grid = '0') then
@@ -410,10 +409,6 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 						end if;
 						new_state <= FETCH_PREVIOUS_ROW;
 					end if;
-				end if;
-				--Overrule 
-				if(sqi_finished = '0') then
-					new_state <= WRITE_ROW_1;
 				end if;  
 			when FETCH_PREVIOUS_ROW =>
 				new_calc_buf_out <= i_calc_buf_out;
@@ -459,8 +454,13 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				else
 					new_sqi_address <= std_logic_vector(resize(((row) + ((column - 1) * 32 * 26)) + 65536, sqi_address'length));
 				end if;
-				sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
-				sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
+				if (edit = '1') then
+					sqi_data_out(7 downto 6) <= edit_buf_in(1 downto 0); 
+					sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
+				else
+					sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
+					sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
+				end if;
 				if(sqi_finished = '0') then 
 				new_state <= WRITING_1;
 				else 
@@ -475,8 +475,13 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				new_calc_buf_out <= i_calc_buf_out;
 				new_framebuffer_buf <= i_framebuffer_buf;
 				new_row_buf <= i_row_buf;
-				sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
-				sqi_data_out(5 downto 0) <= i_row_buf(5 downto 0);
+				if (edit = '1') then
+					sqi_data_out(7 downto 6) <= edit_buf_in(1 downto 0); 
+					sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
+				else
+					sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
+					sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
+				end if;
 				new_sqi_address <= i_sqi_address;
 				if (sqi_finished = '1') then
 					new_state <= WRITE_ROW_3;
@@ -497,9 +502,13 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				else
 					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address'length));
 				end if;
-				sqi_data_out(6 downto 1) <= calc_buf_in;
-				sqi_data_out(0) <= '0';
-				sqi_data_out(7) <= '0';
+				if (edit = '1') then
+					sqi_data_out <= edit_buf_in;
+				else
+					sqi_data_out(6 downto 1) <= calc_buf_in;
+					sqi_data_out(0) <= '0';
+					sqi_data_out(7) <= '0';
+				end if;
 				new_state <= WRITING_2;
 				--Overrule 
 				if(sqi_finished = '0') then
@@ -513,9 +522,13 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				new_calc_buf_out <= i_calc_buf_out;
 				new_framebuffer_buf <= i_framebuffer_buf;
 				new_row_buf <= row_buf;
-				sqi_data_out(6 downto 1) <= calc_buf_in;
-				sqi_data_out(0) <= '0';
-				sqi_data_out(7) <= '0';
+				if (edit = '1') then
+					sqi_data_out <= edit_buf_in;
+				else
+					sqi_data_out(6 downto 1) <= calc_buf_in;
+					sqi_data_out(0) <= '0';
+					sqi_data_out(7) <= '0';
+				end if;
 				new_sqi_address <= i_sqi_address;
 				if (sqi_finished = '1') then
 					new_state <= IDLE;
