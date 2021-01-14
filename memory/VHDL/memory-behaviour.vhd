@@ -394,7 +394,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address'length));
 						end if;
 						if (edit = '1') then
-							sqi_data_out < edit_buf_in;
+							sqi_data_out <= edit_buf_in;
 						else
 							sqi_data_out(6 downto 1) <= calc_buf_in;
 							sqi_data_out(0) <= '0';

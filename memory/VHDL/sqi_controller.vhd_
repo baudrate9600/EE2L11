@@ -30,7 +30,7 @@ entity sqi_controller is
   				--SQI wires 
 				sck 					 : out std_logic; 
 				cs 					 : out std_logic; 
-				MOSI 					 : out std_logic_vector (3 downto 0)); 
+				mosi 					 : out std_logic_vector (3 downto 0)); 
 
 end sqi_controller;
 

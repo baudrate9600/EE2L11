@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 architecture behaviour of sqi_controller is
-	type sqi_state is (RES, MODE, PAUSE, INIT, START, INSTR, READ, LOAD_BUFFER);
+	type sqi_state is (RES, MODE, PAUSE, INIT, START, INSTR, READ, LOAD_BUFFER,CLEARING);
 	signal state, new_state    : sqi_state;
 	signal done_sig            : std_logic;
 	signal done_reg            : std_logic;
@@ -35,10 +35,10 @@ begin
 	end if;
 end process;
 
-process (clk, single, rw) begin 
+process (clk, single, rw,reset,rw_latch,single_latch) begin 
 		if(reset = '1') then 
 			single_latch <= '0';
-			rw_latch     <= '0'; 
+			rw_latch     <= '0';  
 		elsif rising_edge(clk) then 
 			single_latch <= new_single_latch;
 			rw_latch     <= new_rw_latch; 
@@ -74,12 +74,20 @@ begin
 			end if;
 		when INSTR => 
 			--After 7 bits go to read mode or after 10 bits it is finished with writing 
-			if (count_in = x"6" and RW_LATCH = '1') then
-				new_state <= READ;
-			elsif (count_in = x"9" and RW_LATCH = '0') then
-				new_state <= START;
-			else
-				new_state <= INSTR;
+			if (clear = '1') then 
+				if(count_in = x"2") then 
+					new_state <= CLEARING; 
+				else 
+					new_state <= INSTR; 
+				end if;  
+			else 
+				if (count_in = x"6" and RW_LATCH = '1') then
+					new_state <= READ;
+				elsif (count_in = x"9" and RW_LATCH = '0') then
+					new_state <= START;
+				else
+					new_state <= INSTR;
+				end if; 
 			end if;
 		when READ => 
 			--after 12 bits 1 read has been finished one clock cycle is needed to load the final bit into the register
@@ -93,7 +101,14 @@ begin
 			end if;
 		when LOAD_BUFFER => 
 			new_state <= START;
+		when clearing => 
+			if (clear = '0') then 
+					new_state <= START; 
+			else 
+					new_state <= clearing; 
+			end if; 
 		when others => 
+	
 	end case;
 end process;
 --FSM logic
@@ -167,7 +182,7 @@ begin
 				count_en    <= '0';
 				
 				--Load the shift register with the data command 
-				if RW = '1' then
+				if RW = '1' and clear = '0' then
 					data_out <= "00110000";
 				else
 					data_out <= "00100000";
@@ -192,6 +207,9 @@ begin
 				else 
 					data_out <= (others => '0');
 				end if;
+				if(clear = '1') then 
+					data_out <= (others => '0'); 
+				end if; 
 				--load first then shift 
 				if (SHIFT_nLOAD = '1') then
 					reg_shift <= '1';
@@ -223,13 +241,15 @@ begin
 			when LOAD_BUFFER => 
 				new_data <= '1';
 				high_z <= '1';
+			when CLEARING => 
+					--Do nothing and only zeros are written 
 			when others => 
 		end case;
 	end if;
  
 end process fsm_logic;
  
-process (clk) begin
+process (clk,reset) begin
 if reset = '1' then
 	data_read <= "00000000";
 elsif rising_edge(CLK) then
@@ -261,11 +281,11 @@ end process;
 shift_clk <= clk when toggle_clk = '0' else
              not(clk);
 --MOSI port
-MOSI(0) <= spi when state = RES or state = INIT or state = MODE or state = pause else '0' when state = LOAD_BUFFER or state = START else
+MOSI(0) <= spi when state = RES or state = INIT or state = MODE or state = pause else '0' when state = clearing or state = LOAD_BUFFER or state = START else
            shift_in(0);
-MOSI(1) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = LOAD_BUFFER or state = START else shift_in(1);
-MOSI(2) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = LOAD_BUFFER or state = START else shift_in(2);--When the chip is powered on it is in spi mode and then S03 is the hold pin, which is active low
-MOSI(3) <= '1' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = LOAD_BUFFER or state = START else shift_in(3);
+MOSI(1) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = clearing or state = LOAD_BUFFER or state = START else shift_in(1);
+MOSI(2) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = clearing or state = LOAD_BUFFER or state = START else shift_in(2);--When the chip is powered on it is in spi mode and then S03 is the hold pin, which is active low
+MOSI(3) <= '1' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = clearing or state = LOAD_BUFFER or state = START else shift_in(3);
 
 --wire the shift register so that the order is proper
 i_data_in <= shift_data_in(6) & shift_data_in(4) & shift_data_in(2) & shift_data_in(0) & shift_data_in(7) & shift_data_in(5) & shift_data_in(3) & shift_data_in(1);

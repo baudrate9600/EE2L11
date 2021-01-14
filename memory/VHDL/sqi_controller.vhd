@@ -5,6 +5,7 @@ entity sqi_controller is
    port(clk        : in  std_logic;
         reset      : in  std_logic;
 				en					 : in  std_logic; 
+				clear 					: in  std_logic; 
 			  RW         : in  std_logic;
 				high_z					: out std_logic; 
 				new_data			: out std_logic; 

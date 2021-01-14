@@ -7,6 +7,7 @@ architecture behaviour of sqi_tb is
    port(reset    	: in std_logic;
         clk      	: in std_logic;
         en       	: in  std_logic;
+				clear     : in  std_logic; 
 				high_z				: out std_logic; 		
 				single				: in std_logic;			
 				new_data  : out std_logic;				
@@ -27,6 +28,7 @@ end component;
    signal reset    : std_logic;
    signal clk      : std_logic;
    signal en       : std_logic;
+	 signal clear    : std_logic; 
 	 signal high_z   : std_logic; 
 	 signal single   : std_logic; 
    signal RW	 					:	std_logic;
@@ -45,12 +47,12 @@ end component;
 
 		signal counter : unsigned(3 downto 0); 
 begin
-   test: sqi port map (reset, clk, en,high_z,single,new_data,RW, address, data_in, data_out, SCK, MOSI,MISO, CS,done );
+   test: sqi port map (reset, clk, en,clear,high_z,single,new_data,RW, address, data_in, data_out, SCK, MOSI,MISO, CS,done );
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
 	 reset <= '1' after 0 ns, '1' after 51 ns, '0' after 100 ns;
   
-	
+	clear <= '1' after 0 ns, '0' after  5000 ns; 
 	 address <= "101"&"0001"&"0001"& "1111";
 	 
 

@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
+use ieee.numeric_std.all; 
 
 architecture behaviour of mem_interface is
 	component memory is
@@ -33,7 +34,7 @@ architecture behaviour of mem_interface is
 			reset : in std_logic;
 			clk : in std_logic;
 			en : in std_logic;
-
+			clear : in std_logic; 
 			high_z : out std_logic;
 			single : in std_logic;
 			new_data : out std_logic;
@@ -58,9 +59,13 @@ architecture behaviour of mem_interface is
 	signal i_address : std_logic_vector(14 downto 0); 
 	signal done_or_new_signal : std_logic; 
 	signal i_sqi_enable : std_logic;
-	type fsm is(RES,WAKEUP);
+	type fsm is(RES,WAKEUP,CLEARING,START);
 	signal state, new_state : fsm;
 	signal i_ce : std_logic; 
+	signal clear : std_logic;
+	signal sqi_enable : std_logic; 
+  signal count , new_count : integer range 0 to 16#FFFF#;
+ 
 begin
 	done_or_new_signal <= i_new_data or i_done;
 	--New state generation
@@ -69,30 +74,56 @@ begin
 		if rising_edge(clk) then
 			if reset = '1' then
 				state <= RES;
+				count <= 0; 
 			else
 				state <= new_state;
+				count <= new_count; 
 		end if;
 	end if;
 	end process;
 	
-	process(state, reset, done_or_new_signal) begin
-		if(state = RES) then 
-				if(done_or_new_signal) then 
+	process(state, reset, count, done_or_new_signal) begin
+			i_ce <= '0'; 
+			i_sqi_enable <= '0'; 
+			new_count <= count; 
+		--Go to this state when the chip is reset.
+		case state is 
+		when RES => 
+				if(done_or_new_signal = '1') then 
 					new_state <= wakeup; 
 				else 
 					new_state <= RES; 
-				end if; 
-				i_ce <= '0'; 
-		else
-				i_ce <= ce;
-				new_state <= wakeup; 
-		end if; 
+				end if; 				
+		--Wait until the memory chip has been initialized
+		when wakeup => 
+				
+				new_state <= clearing ;
+				clear <= '1'; 
+				i_sqi_enable <= '1';  
+		--Clear the chip so that all cells are black 
+		when CLEARING =>  
+				i_sqi_enable <= '1'; 
+				if(count = 16#FFFF#) then 
+						new_state <= START; 
+				else 
+						new_state <= clearing ; 
+				end if;
+				new_count <= count +  1; 
+		--Now the memory chip can be controlled from other sourcs 
+		when START =>
+				new_state <= start; 
+				i_ce <= ce; 
+				i_sqi_enable <= sqi_enable; 
+		end case; 
 	end process; 
+
+	
 	u0 : sqi
 	port map(
 		reset => reset, 
 		clk => clk, 
 		en => i_sqi_enable, 
+		clear => clear,
 		high_z => high_z, 
 		single => i_single, 
 		new_data => i_new_data, 
@@ -129,6 +160,6 @@ begin
 		sqi_finished => done_or_new_signal, 
 		sqi_data_in => i_sqi_data_out, 
 		sqi_data_out => i_sqi_data_in, 
-		sqi_enabled => i_sqi_enable); 
+		sqi_enabled => sqi_enable); 
 end behaviour;
 
