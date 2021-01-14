@@ -265,11 +265,11 @@ end process;
 shift_clk <= clk when toggle_clk = '0' else
              not(clk);
 --MOSI port
-MOSI(0) <= spi when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER else
+MOSI(0) <= spi when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER or state = START else
            shift_in(0);
-MOSI(1) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER else shift_in(1);
-MOSI(2) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER else shift_in(2);--When the chip is powered on it is in spi mode and then S03 is the hold pin, which is active low
-MOSI(3) <= '1' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER else shift_in(3);
+MOSI(1) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER or state = START else shift_in(1);
+MOSI(2) <= '0' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER or state = START else shift_in(2);--When the chip is powered on it is in spi mode and then S03 is the hold pin, which is active low
+MOSI(3) <= '1' when state = RES or state = INIT or state = MODE or state = pause else '0' when state = READ or state = LOAD_BUFFER or state = START else shift_in(3);
 
 --wire the shift register so that the order is proper
 i_data_in <= shift_data_in(6) & shift_data_in(4) & shift_data_in(2) & shift_data_in(0) & shift_data_in(7) & shift_data_in(5) & shift_data_in(3) & shift_data_in(1);
