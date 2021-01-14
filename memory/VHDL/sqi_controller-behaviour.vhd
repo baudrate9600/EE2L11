@@ -16,25 +16,12 @@ architecture behaviour of sqi_controller is
 	signal toggle_clk          : std_logic;
 	signal SCK_CS_EN           : std_logic;
 	signal RW_LATCH            : std_logic;
-	signal RW_LATCH_ENABLE     : std_logic; 
+	signal new_rw_latch        : std_logic; 
 	signal SINGLE_LATCH        : std_logic;
-	signal SINGLE_LATCH_ENABLE : std_logic;
+	signal new_single_latch    : std_logic;
 begin
-	process (RW, RW_LATCH_ENABLE) begin
-	if (RW_LATCH_ENABLE = '1') then
-		RW_LATCH <= RW;
-	else
-		RW_LATCH <= RW_LATCH;
-	end if;
-end process;
 
-	process (SINGLE, SINGLE_LATCH_ENABLE) begin
-		if (SINGLE_LATCH_ENABLE = '1') then
-			SINGLE_LATCH <= SINGLE;
-		else
-			SINGLE_LATCH <= SINGLE_LATCH;
-		end if;
-	end process;
+
  
 --New state generation
 process (clk, new_state)
@@ -46,6 +33,16 @@ begin
 			state <= new_state;
 		end if;
 	end if;
+end process;
+
+process (clk, single, rw) begin 
+		if(reset = '1') then 
+			single_latch <= '0';
+			rw_latch     <= '0'; 
+		elsif rising_edge(clk) then 
+			single_latch <= new_single_latch;
+			rw_latch     <= new_rw_latch; 
+		end if; 
 end process;
 fsm_state : process (state, en, spi, count_in, done_sig, RW, single)
 begin
@@ -119,8 +116,8 @@ begin
 		toggle_clk          <= '0';
 		SCK                 <= '0';
 		CS                  <= '1';
-		RW_LATCH_ENABLE     <= '1';
-		SINGLE_LATCH_ENABLE <= '1';
+		new_rw_latch <= rw_latch;
+		new_single_latch <= single_latch;  
 	else
 		--Default values to prevent latches
 		count_load          <= '0';
@@ -138,8 +135,8 @@ begin
 		toggle_clk          <= '0';
 		SCK                 <= not CLK;
 		CS                  <= '0';
-		RW_LATCH_ENABLE     <= '0';
-		SINGLE_LATCH_ENABLE <= '0';
+		new_rw_latch <= rw_latch;
+		new_single_latch <= single_latch;  
 		case state is
 			when RES => 
 				SCK         <= '0';
@@ -177,11 +174,10 @@ begin
 				end if;
 				reg_load            <= '1';
 				done                <= '1';
- 
-				new_data            <= '1';
+ 				new_rw_latch        <= rw; 
+				new_single_latch    <= single;
 				--Store the read and single command 
-				RW_LATCH_ENABLE     <= '1';
-				SINGLE_LATCH_ENABLE <= '1';
+				
 			when INSTR => 
 				--Load the shift register with zeros 
 				if (count_in = x"0" or count_in = x"1") then
