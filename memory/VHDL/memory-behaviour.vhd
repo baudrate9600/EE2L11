@@ -442,7 +442,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, cal
 				if (grid = '0') then
 					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)), sqi_address_mid'length));
 				else
-					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 1048576, sqi_address_mid'length));
+					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address_mid'length));
 				end if;
 				sqi_data_out(6 downto 1) <= calc_buf_in;
 				sqi_data_out(0) <= '0';
