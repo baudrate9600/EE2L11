@@ -67,6 +67,7 @@ begin
 	end process;
 	
 
+
 	-- FSM
 FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, i_x,x, y, rw, i_calc_buf_out,address_out, i_framebuffer_buf, i_row_buf, mode, calc_buf_in, grid, edit, i_sqi_address)
 	variable row : unsigned(7 downto 0);

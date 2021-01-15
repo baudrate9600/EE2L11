@@ -180,7 +180,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, i_x,x, y, rw,
 				single <= '1';
 				sqi_enabled <= '0';
 				sqi_data_out <= (others => '0');
-				i_x <= std_logic_vector(counter (4 downto 0)); 
+				i_x <= std_logic_vector(counter (4 downto 0));
 				if (counter < 26) then
 					new_counter <= counter;
 					new_state <= READING_FRAMEBUFFER;
