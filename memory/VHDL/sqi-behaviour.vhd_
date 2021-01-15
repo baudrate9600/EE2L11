@@ -89,7 +89,7 @@ begin
 	u2 : sqi_controller
 	port map
 	(clk,reset,en,clear,rw,high_z,new_data,single,data_in,data_read_in, data_out,data_wire,address,count_reset,count_en,count_load,count_out,count_in, shift_clk,
-		shift_reg,load_reg,done,shift_out,shift_reset,sck,cs,mosi );
+		shift_reg,load_reg,done,shift_out,shift_reset,sck,cs,mosi);
 
  
  

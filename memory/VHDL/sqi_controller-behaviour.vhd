@@ -196,10 +196,11 @@ begin
 			when INSTR => 
 				--Load the shift register with zeros 
 				if (count_in = x"0" or count_in = x"1") then
-					data_out <= "00000000";
+					--data_out <= "00000000";
+					data_out <= address(19 downto 16) & address(23 downto 20);
 				--Load the address in the shift registers
 				elsif (count_in = x"2" or count_in = x"3") then
-					data_out <= address(11 downto 8) & "0" & address(14 downto 12);
+					data_out <= address(11 downto 8) & address(15 downto 12);
 				elsif (count_in = x"4"OR count_in = x"5") then
 					data_out <= address(3 downto 0) & address(7 downto 4);
 				elsif (count_in = x"6"OR count_in = x"7") then

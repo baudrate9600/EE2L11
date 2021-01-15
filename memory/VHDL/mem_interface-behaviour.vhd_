@@ -82,10 +82,11 @@ begin
 	end if;
 	end process;
 	
-	process(state, reset, count, done_or_new_signal) begin
+	process(state,i_ce,ce,reset, count, done_or_new_signal,sqi_enable) begin
 			i_ce <= '0'; 
 			i_sqi_enable <= '0'; 
 			new_count <= count; 
+			clear <= '1'; 
 		--Go to this state when the chip is reset.
 		case state is 
 		when RES => 
@@ -93,7 +94,8 @@ begin
 					new_state <= wakeup; 
 				else 
 					new_state <= RES; 
-				end if; 				
+				end if; 			
+					
 		--Wait until the memory chip has been initialized
 		when wakeup => 
 				
@@ -103,14 +105,15 @@ begin
 		--Clear the chip so that all cells are black 
 		when CLEARING =>  
 				i_sqi_enable <= '1'; 
-				if(count = 16#FFFF#) then 
-						new_state <= START; 
+				if(count = 16#F#) then 
+						new_state <= START;
 				else 
 						new_state <= clearing ; 
 				end if;
 				new_count <= count +  1; 
 		--Now the memory chip can be controlled from other sourcs 
 		when START =>
+				clear <= '0'; 
 				new_state <= start; 
 				i_ce <= ce; 
 				i_sqi_enable <= sqi_enable; 

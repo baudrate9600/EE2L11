@@ -19,7 +19,7 @@ architecture behaviour of mem_interface is
 			edit_buf_in : in std_logic_vector(7 downto 0);
 			calc_buf_out : out std_logic_vector(23 downto 0);
 			framebuffer_buf : out std_logic_vector(157 downto 0);
-			sqi_address : out std_logic_vector(14 downto 0);
+			sqi_address : out std_logic_vector(23 downto 0);
 			ready : out std_logic;
 			single : out std_logic;
 			sqi_rw : out std_logic;
@@ -39,7 +39,7 @@ architecture behaviour of mem_interface is
 			single : in std_logic;
 			new_data : out std_logic;
 			rw : in std_logic;
-			address : in std_logic_vector (14 downto 0);
+			address : in std_logic_vector (23 downto 0);
 			data_in : in std_logic_vector(7 downto 0);
 			data_out : out std_logic_vector(7 downto 0);
 
@@ -56,7 +56,7 @@ architecture behaviour of mem_interface is
  
 	signal i_single, i_done, i_new_data, i_rw : std_logic;
 	signal i_sqi_data_in, i_sqi_data_out : std_logic_vector(7 downto 0);
-	signal i_address : std_logic_vector(14 downto 0); 
+	signal i_address : std_logic_vector(23 downto 0); 
 	signal done_or_new_signal : std_logic; 
 	signal i_sqi_enable : std_logic;
 	type fsm is(RES,WAKEUP,CLEARING,START);
@@ -82,7 +82,7 @@ begin
 	end if;
 	end process;
 	
-	process(state, reset, count, done_or_new_signal) begin
+	process(state,i_ce,ce,reset, count, done_or_new_signal,sqi_enable) begin
 			i_ce <= '0'; 
 			i_sqi_enable <= '0'; 
 			new_count <= count; 
@@ -105,7 +105,7 @@ begin
 		--Clear the chip so that all cells are black 
 		when CLEARING =>  
 				i_sqi_enable <= '1'; 
-				if(count = 16#FFFF#) then 
+				if(count = 16#F#) then 
 						new_state <= START;
 				else 
 						new_state <= clearing ; 

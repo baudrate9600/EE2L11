@@ -7,6 +7,7 @@ entity sqi is
 		reset    : in std_logic;
 		clk      : in std_logic;
 		en       : in std_logic;
+		clear    : in std_logic; 
 
 		high_z   : out std_logic;
 		single   : in std_logic;

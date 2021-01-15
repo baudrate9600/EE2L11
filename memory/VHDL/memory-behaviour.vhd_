@@ -11,13 +11,13 @@ signal state, new_state : memory_state;
 signal new_calc_buf_out : std_logic_vector(23 downto 0);
 signal row_buf, new_row_buf : std_logic_vector(5 downto 0);
 signal new_framebuffer_buf : std_logic_vector(157 downto 0);
-signal new_sqi_address : std_logic_vector(14 downto 0);
+signal new_sqi_address : std_logic_vector(23 downto 0);
 signal state_latch : memory_state; 
 signal dff_command, new_dff_command : std_logic_vector(1 downto 0); --This remebers the input given to the system, so that in waiting state it knows to
 																										--which state it should go. 
 signal i_calc_buf_out : std_logic_vector(23 downto 0); 
 signal i_row_buf      : std_logic_vector(5 downto 0); 
-signal i_sqi_address  : std_logic_vector(14 downto 0); 
+signal i_sqi_address  : std_logic_vector(23 downto 0); 
 signal i_framebuffer_buf : std_logic_vector(157 downto 0); 
 begin
 	-- New state  generation
@@ -194,9 +194,9 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				sqi_data_out <= (others => '0');
 				if (counter < 26) then
 					if (grid = '1') then
-						new_sqi_address <= std_logic_vector(resize((row) + (counter * 32 * 26), sqi_address'length));
+						new_sqi_address <= std_logic_vector(resize((row) + (counter * 32 * 5), sqi_address'length));
 					else
-						new_sqi_address <= std_logic_vector(resize(((row) + (counter * 32 * 26)) + 65536, sqi_address'length));
+						new_sqi_address <= std_logic_vector(resize(((row) + (counter * 32 * 5)) + 65536, sqi_address'length));
 					end if;
 					new_counter <= counter;
 					new_state <= READING_FRAMEBUFFER;
@@ -346,18 +346,18 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 						new_calc_buf_out(23 downto 8) <= i_calc_buf_out(23 downto 8);
 						new_calc_buf_out(7 downto 0) <= (others => '0');
 						if (grid = '1') then
-							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)), sqi_address'length));
+							new_sqi_address <= std_logic_vector(resize(((row) + (column * to_unsigned(32,5) * to_unsigned(5,3))), sqi_address'length));
 						else
-							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address'length));
+							new_sqi_address <= std_logic_vector(resize(((row) + (column * to_unsigned(32,5) * to_unsigned(5,3))) + to_unsigned(65536,16), sqi_address'length));
 						end if;
 						new_counter <= counter + 1;
 					else
 						new_calc_buf_out(23 downto 8) <= i_calc_buf_out(23 downto 8);
 						new_calc_buf_out(7 downto 0) <= i_calc_buf_out(7 downto 0);
 						if (grid = '1') then
-							new_sqi_address <= std_logic_vector(resize(((row - 1) + (column * 32 * 26)), sqi_address'length));
+							new_sqi_address <= std_logic_vector(resize(((row - 1 ) + (column * to_unsigned(32,5) * to_unsigned(5,3))), sqi_address'length));
 						else
-							new_sqi_address <= std_logic_vector(resize(((row - 1) + (column * 32 * 26)) + 65536, sqi_address'length));
+							new_sqi_address <= std_logic_vector(resize(((row - 1 ) + (column * to_unsigned(32,5) * to_unsigned(5,3))) + to_unsigned(65536,16), sqi_address'length));
 						end if;
 						new_counter <= counter;
 					end if;
@@ -383,18 +383,20 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				new_framebuffer_buf <= i_framebuffer_buf;
 				new_row_buf <= i_row_buf;
 				sqi_enabled <= '0';
+				sqi_rw <= '0'; 
+new_sqi_address <= (others => '1'); 
 				--Overrule 
 				if(sqi_finished = '0') then
-					new_state <= WRITE_ROW_1;
+				  new_state <= WRITE_ROW_1;
 				else
 					if (column = 0) then
 						if (grid = '0') then
-							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)), sqi_address'length));
+							new_sqi_address <= std_logic_vector(resize(((row) + (column * to_unsigned(32,5) * to_unsigned(5,3))), sqi_address'length));
 						else
-							new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address'length));
-						end if;
+							new_sqi_address <= std_logic_vector(resize(((row) + (column * to_unsigned(32,5) * to_unsigned(5,3))) + to_unsigned(65536,16), sqi_address'length));
+							end if;
 						if (edit = '1') then
-							sqi_data_out < edit_buf_in;
+							sqi_data_out <= edit_buf_in;
 						else
 							sqi_data_out(6 downto 1) <= calc_buf_in;
 							sqi_data_out(0) <= '0';
@@ -403,13 +405,14 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 						new_state <= WRITING_0;
 					else
 						if (grid = '0') then
-							new_sqi_address <= std_logic_vector(resize(((row) + ((column - 1) * 32 * 26)), sqi_address'length));
+							new_sqi_address <= std_logic_vector(resize(((row) + ((column-1) * to_unsigned(32,5) * to_unsigned(5,3))), sqi_address'length));
 						else
-							new_sqi_address <= std_logic_vector(resize(((row) + ((column - 1) * 32 * 26)) + 65536, sqi_address'length));
-						end if;
+							new_sqi_address <= std_logic_vector(resize(((row) + ((column-1) * to_unsigned(32,5) * to_unsigned(5,3))) + to_unsigned(65536,16), sqi_address'length));
+						end if; 
 						new_state <= FETCH_PREVIOUS_ROW;
 					end if;
 				end if;  
+				
 			when FETCH_PREVIOUS_ROW =>
 				new_calc_buf_out <= i_calc_buf_out;
 				ready <= '0';
@@ -450,9 +453,11 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				new_row_buf <= i_row_buf;
 				new_framebuffer_buf <= i_framebuffer_buf;
 				if (grid = '0') then
-					new_sqi_address <= std_logic_vector(resize(((row) + ((column - 1) * 32 * 26)), sqi_address'length));
+					new_sqi_address <= std_logic_vector(resize(((row) + ((column - 1) * 32 * 5)), sqi_address'length));
+					new_sqi_address(15) <= '0'; 
 				else
-					new_sqi_address <= std_logic_vector(resize(((row) + ((column - 1) * 32 * 26)) + 65536, sqi_address'length));
+					new_sqi_address <= std_logic_vector(resize(((row) + ((column - 1) * 32 * 5)) , sqi_address'length));				
+					new_sqi_address(15) <= '1'; 
 				end if;
 				if (edit = '1') then
 					sqi_data_out(7 downto 6) <= edit_buf_in(1 downto 0); 
@@ -498,9 +503,9 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				new_framebuffer_buf <= i_framebuffer_buf;
 				new_row_buf <= row_buf;
 				if (grid = '0') then
-					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)), sqi_address'length));
+					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 5)), sqi_address'length));
 				else
-					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 26)) + 65536, sqi_address'length));
+					new_sqi_address <= std_logic_vector(resize(((row) + (column * 32 * 5)) + 65536, sqi_address'length));
 				end if;
 				if (edit = '1') then
 					sqi_data_out <= edit_buf_in;

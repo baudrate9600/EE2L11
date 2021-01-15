@@ -54,8 +54,8 @@ begin
             '0' after 80 ns;
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
-   x(0) <= '1' after 0 ns;
-   x(1) <= '0' after 0 ns;
+   x(0) <= '0' after 0 ns;
+   x(1) <= '1' after 0 ns;
    x(2) <= '0' after 0 ns;
    x(3) <= '0' after 0 ns;
    x(4) <= '0' after 0 ns;
@@ -68,7 +68,7 @@ begin
    y(6) <= '0' after 0 ns;
    y(7) <= '0' after 0 ns;
    rw <= '0' after 0 ns, '0' after 3000 ns;
-   ce <= '0' after 0 ns, '1' after 10 ns;
+   ce <= '0' after 0 ns, '1' after 2100 ns;
    mode <= '0' after 0 ns;
    edit <= '1' after 0 ns;
    grid <= '0' after 0 ns;
@@ -86,9 +86,11 @@ begin
    edit_buf_in(5) <= '0' after 0 ns;
    edit_buf_in(6) <= '0' after 0 ns;
    edit_buf_in(7) <= '1' after 0 ns;
-   miso(0) <= '1' after 0 ns;
-   miso(1) <= '1' after 0 ns;
-   miso(2) <= '0' after 0 ns;
+
+	 
+   miso(0) <= '1' after 0 ns , '0' after 2500 ns, '1' after 2541 ns, '0' after 2561 ns;
+   miso(1) <= '1' after 0 ns, '1' after 2500 ns, '1' after 2541 ns, '0' after 2561 ns;
+   miso(2) <= '0' after 0 ns, '0' after 2500 ns, '0' after 2541 ns, '0' after 2561 ns;
    miso(3) <= '0' after 0 ns;
 
 	

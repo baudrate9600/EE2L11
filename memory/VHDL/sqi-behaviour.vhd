@@ -60,7 +60,7 @@ architecture behaviour of sqi is
 		shift_data_in : in std_logic_vector(7 downto 0);
 		data_read     : out std_logic_vector(7 downto 0);
 		data_out      : out std_logic_vector(7 downto 0);
-		address       : in std_logic_vector(14 downto 0);
+		address       : in std_logic_vector(23 downto 0);
 		--counter interface
 		count_reset : out std_logic;
 		count_en    : out std_logic;

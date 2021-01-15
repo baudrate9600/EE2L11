@@ -249,7 +249,7 @@ begin
  
 end process fsm_logic;
  
-process (clk) begin
+process (clk,reset) begin
 if reset = '1' then
 	data_read <= "00000000";
 elsif rising_edge(CLK) then
