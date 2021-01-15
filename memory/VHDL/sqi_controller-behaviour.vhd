@@ -196,8 +196,8 @@ begin
 			when INSTR => 
 				--Load the shift register with zeros 
 				if (count_in = x"0" or count_in = x"1") then
-					--data_out <= "00000000";
-					data_out <= address(19 downto 16) & address(23 downto 20);
+					data_out <= "00000000";
+					--data_out <= address(19 downto 16) & address(23 downto 20);
 				--Load the address in the shift registers
 				elsif (count_in = x"2" or count_in = x"3") then
 					data_out <= address(11 downto 8) & address(15 downto 12);

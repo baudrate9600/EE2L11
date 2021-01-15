@@ -13,7 +13,7 @@ entity sqi is
 		single   : in std_logic;
 		new_data : out std_logic;
 		rw       : in std_logic;
-		address  : in std_logic_vector (23 downto 0);
+		address  : in std_logic_vector (15 downto 0);
 		data_in  : in std_logic_vector(7 downto 0);
 		data_out : out std_logic_vector(7 downto 0);
 

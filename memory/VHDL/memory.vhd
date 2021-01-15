@@ -16,7 +16,7 @@ entity memory is
 	edit_buf_in  : in  std_logic_vector(7 downto 0);
         calc_buf_out : out std_logic_vector(23 downto 0);
 	framebuffer_buf : out std_logic_vector(157 downto 0);
-	sqi_address  : out std_logic_vector(23 downto 0);
+	sqi_address  : out std_logic_vector(15 downto 0);
         ready        : out std_logic;
 	single	     : out std_logic;
 	sqi_rw	     : out std_logic;

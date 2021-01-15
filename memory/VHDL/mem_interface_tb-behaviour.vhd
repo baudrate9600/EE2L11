@@ -55,11 +55,11 @@ begin
    clk <= '0' after 0 ns,
           '1' after 20 ns when clk /= '1' else '0' after 20 ns;
    x(0) <= '0' after 0 ns;
-   x(1) <= '1' after 0 ns;
+   x(1) <= '0' after 0 ns;
    x(2) <= '0' after 0 ns;
    x(3) <= '0' after 0 ns;
    x(4) <= '0' after 0 ns;
-   y(0) <= '0' after 0 ns;
+   y(0) <= '1' after 0 ns;
    y(1) <= '0' after 0 ns;
    y(2) <= '0' after 0 ns;
    y(3) <= '0' after 0 ns;

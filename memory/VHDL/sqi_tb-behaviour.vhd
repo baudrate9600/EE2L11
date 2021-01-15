@@ -12,7 +12,7 @@ architecture behaviour of sqi_tb is
 				single				: in std_logic;			
 				new_data  : out std_logic;				
 				RW	 				: in std_logic;
-				address  	: in std_logic_vector (14 downto 0); 
+				address  	: in std_logic_vector (15 downto 0); 
    				data_in  	: in std_logic_vector(7 downto 0);
 				data_out 	: out std_logic_vector(7 downto 0);
 		
@@ -35,7 +35,7 @@ end component;
 	 signal data_out : std_logic_vector(7 downto 0); 
 	 signal	new_data : std_logic;			
    signal data_in  : std_logic_vector(7 downto 0);
-   signal address  : std_logic_vector(14 downto 0);	
+   signal address  : std_logic_vector(15 downto 0);	
 		
    signal SCK	 				: std_logic;
    signal MOSI     : std_logic_vector(3 downto 0);
@@ -53,7 +53,7 @@ begin
 	 reset <= '1' after 0 ns, '1' after 51 ns, '0' after 100 ns;
   
 	clear <= '1' after 0 ns, '0' after  5000 ns; 
-	 address <= "101"&"0001"&"0001"& "1111";
+	 address <= "0101"&"0001"&"0001"& "1111";
 	 
 
 		process
