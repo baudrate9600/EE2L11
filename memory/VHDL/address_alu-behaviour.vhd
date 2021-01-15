@@ -30,6 +30,8 @@ begin
 	multiply_160 <= to_unsigned(160,11) * i_mux_0;
 
 	adder    <= i_mux_1 + multiply_160;
+
+	--Remove last bit from sum 
 	truncated <= adder(14 downto 0); 
 	address_out <= grid & std_logic_vector(truncated) ;
 		

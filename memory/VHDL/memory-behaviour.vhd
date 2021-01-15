@@ -23,6 +23,7 @@ signal i_framebuffer_buf : std_logic_vector(157 downto 0);
 signal x_min_one,y_min_one : std_logic; 
 signal address_out : std_logic_vector(15 downto 0); 
 
+signal i_x         : std_logic_vector(4 downto 0); 
 
 component address_alu is
 	port(x : in std_logic_vector(4 downto 0); 
@@ -37,7 +38,7 @@ end component;
 
 begin
 
-	alu : address_alu port map(x,y,grid,x_min_one,y_min_one,address_out); 
+	alu : address_alu port map(i_x,y,grid,x_min_one,y_min_one,address_out); 
 	-- New state  generation
 	calc_buf_out <= i_calc_buf_out; 
 	row_buf <= i_row_buf; 
@@ -67,7 +68,7 @@ begin
 	
 
 	-- FSM
-FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_calc_buf_out, i_framebuffer_buf, i_row_buf, mode, calc_buf_in, grid, edit, i_sqi_address)
+FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, i_x,x, y, rw, i_calc_buf_out,address_out, i_framebuffer_buf, i_row_buf, mode, calc_buf_in, grid, edit, i_sqi_address)
 	variable row : unsigned(7 downto 0);
 	variable column : unsigned(4 downto 0);
 	begin
@@ -85,6 +86,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				x_min_one <= '0'; 
 				y_min_one <= '0'; 
 				ready <= '0';
+				i_x <= x; -- In all case but the framebuffer rendering x is controlled by the user interface 
 		case state is
 			when RESET_STATE =>
 				new_calc_buf_out <= (others => '0');
@@ -109,13 +111,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				single <= '0';
 				sqi_rw <= '0';
 	
-			
-				new_dff_command <= rw & mode;
-				if (ce = '1') then
-					new_state <= waiting;
-					sqi_enabled <= '1';
-					new_counter <= to_unsigned(0, counter'length);
-					if (rw = '1') then
+				if (rw = '1') then
 						sqi_rw <= '1';	
 						if(mode = '0') then 
 							single <= '0'; 
@@ -123,59 +119,45 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 							single <= '1';
 						end if;
 					else
-						sqi_rw <= '0';
+						if(x  = "00000") then
+								sqi_rw <= '0'; 
+						else 
+								sqi_rw <= '1'; 
+						end if; 
 					end if;
-					
+
+				new_dff_command <= rw & mode;
+				if (ce = '1') then
+					new_state <= waiting;
+					new_counter <= to_unsigned(0, counter'length);
 				else
 					new_state <= IDLE;
 				end if;	
 			when WAITING =>
 				sqi_enabled <= '1'; 
-				if(sqi_finished = '0') then 
-					if (dff_command(1) = '1') then
+
+				if (dff_command(1) = '1') then
 							sqi_rw <= '1';	
 							if (dff_command(0) = '0') then
-								new_state <= READING;
+								new_state <= READ_ROW;
+								single <= '0'; 
 							else
 								new_state <= READ_framebuffer;
+								single <= '1'; 
 							end if;
 					else
-							sqi_rw <= '0';
-							new_state <= WRITE_ROW_1;
+							if(x = "00000") then
+									sqi_rw <= '0';
+									 new_state <= WRITE_ROW_1;
+							else 
+									new_state <= fetching; 
+									sqi_rw <= '1'; 
+							end if; 
 					end if;
-				
-				else 
+				if(sqi_finished = '1') then 
 					new_state <= WAITING; 
 				end if; 
-			when READING =>
-				
-				sqi_enabled <= '0';
-				single <= '0';
-				sqi_rw <= '1';
-				
-				
-				if (sqi_finished = '1') then
-					case counter is
-						when to_unsigned(0, counter'length) =>
-							new_calc_buf_out(23 downto 8) <= i_calc_buf_out(23 downto 8);
-							new_calc_buf_out(7 downto 0) <= sqi_data_in;
-						when to_unsigned(1, counter'length) =>
-							new_calc_buf_out(23 downto 16) <= i_calc_buf_out(23 downto 16);
-							new_calc_buf_out(15 downto 8) <= sqi_data_in;
-							new_calc_buf_out(7 downto 0) <= i_calc_buf_out(7 downto 0);
-						when to_unsigned(2, counter'length) =>
-							new_calc_buf_out(15 downto 0) <= i_calc_buf_out(15 downto 0);
-							new_calc_buf_out(23 downto 16) <= sqi_data_in;
-						when others =>
-							new_calc_buf_out <= i_calc_buf_out;
-					end case;
-
-					new_counter <= counter + 1;
-					new_state <= READ_ROW;
-				else
-					new_state <= READING;
-					new_counter <= counter;
-				end if;
+			
 			when WRITING_0 =>
 				sqi_enabled <= '0';
 				sqi_rw <= '0';
@@ -194,10 +176,11 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				end if;
 
 			when READ_FRAMEBUFFER =>
-	
+				
 				single <= '1';
 				sqi_enabled <= '0';
 				sqi_data_out <= (others => '0');
+				i_x <= std_logic_vector(counter (4 downto 0));
 				if (counter < 26) then
 					new_counter <= counter;
 					new_state <= READING_FRAMEBUFFER;
@@ -210,6 +193,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 					end if; 
 				end if;
 			when READING_FRAMEBUFFER =>
+				i_x <= std_logic_vector(counter (4 downto 0)); 
 				sqi_enabled <= '0';
 				single <= '1';
 				sqi_rw <= '1';
@@ -281,25 +265,51 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				-- have address of middle row in x and y,
 				-- need to convert them to proper rows and read
 				-- them one by one
-			
+			if (y = "00000000" ) then
+				else
+						y_min_one <= '1'; 
+				end if;	
 				sqi_data_out <= (others => '0');
 				sqi_enabled <= '0';
 				single <= '0';
-					sqi_rw <= '1';
+				sqi_rw <= '1';
 				if (counter < 3) then
-					if (x = "00000" and counter = 0) then
+					if (y = "00000000" and counter = 0) then
 						new_calc_buf_out(7 downto 0) <= (others => '0');
 						new_counter <= counter + 1;
-					else
-						new_calc_buf_out(7 downto 0) <= i_calc_buf_out(7 downto 0);
-						x_min_one <= '1'; 
-						new_counter <= counter;
 					end if;				
 					new_state <=  READING;
 				else
-					new_calc_buf_out <= i_calc_buf_out;
 					new_state <= IDLE;
-					new_sqi_address <= i_sqi_address;
+				end if;
+			
+			when READING =>
+				
+				sqi_enabled <= '0';
+				single <= '0';
+				sqi_rw <= '1';
+				if (y = "00000000" ) then
+				else
+						y_min_one <= '1'; 
+				end if;	
+				
+				if (sqi_finished = '1') then
+					case counter is
+						when to_unsigned(0, counter'length) =>
+							new_calc_buf_out(7 downto 0) <= sqi_data_in;
+						when to_unsigned(1, counter'length) =>
+							new_calc_buf_out(15 downto 8) <= sqi_data_in;
+						when to_unsigned(2, counter'length) =>
+							new_calc_buf_out(23 downto 16) <= sqi_data_in;
+						when others =>
+							new_calc_buf_out <= i_calc_buf_out;
+					end case;
+
+					new_counter <= counter + 1;
+					new_state <= READ_ROW;
+				else
+					new_state <= READING;
+					new_counter <= counter;
 				end if;
 			when WRITE_ROW_1 =>
 				-- When it's the first row we can just write in the row
@@ -322,8 +332,15 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 							sqi_data_out(0) <= '0';
 							sqi_data_out(7) <= '0';
 						end if;
-						new_state <= WRITING_0;
+						new_state <= IDLE;
 					else
+						if (edit = '1') then
+							sqi_data_out <= edit_buf_in;
+						else
+							sqi_data_out(6 downto 1) <= calc_buf_in;
+							sqi_data_out(0) <= '0';
+							sqi_data_out(7) <= '0';
+						end if;
 						new_state <= FETCH_PREVIOUS_ROW;
 				end if;
 			  
@@ -361,13 +378,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				sqi_enabled <= '1';
 				x_min_one <= '1';
 
-				if (edit = '1') then
-					sqi_data_out(7 downto 6) <= edit_buf_in(1 downto 0); 
-					sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
-				else
-					sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
-					sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
-				end if;
+
 				if(sqi_finished = '0') then 
 				new_state <= WRITING_1;
 				else 
@@ -379,7 +390,7 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				sqi_enabled <= '0';
 				single <= '1';
 				sqi_rw <= '0';
-
+				x_min_one <= '1';
 	
 				if (edit = '1') then
 					sqi_data_out(7 downto 6) <= edit_buf_in(1 downto 0); 
@@ -388,7 +399,6 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 					sqi_data_out(7 downto 6) <= calc_buf_in(1 downto 0); 
 					sqi_data_out(5 downto 0) <= row_buf(5 downto 0);
 				end if;
-				new_sqi_address <= i_sqi_address;
 				if (sqi_finished = '1') then
 					new_state <= WRITE_ROW_3;
 				else
@@ -396,8 +406,8 @@ FSM:	process(state, ce, sqi_finished, reset, sqi_data_in, counter, x, y, rw, i_c
 				end if;
 			when WRITE_ROW_3 =>
 				-- Now we write the actual row we are currently on
-			sqi_enabled <= '1';
-
+				sqi_enabled <= '1';
+				sqi_rw <= '0'; 
 
 
 				if (edit = '1') then
